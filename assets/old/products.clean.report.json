@@ -1,0 +1,8 @@
+{
+  "generatedAt": "2025-12-24T09:23:00.455Z",
+  "detectedBlocks": 130,
+  "generatedVariantRows": 378,
+  "rowsWithNoVariantMatches": 0,
+  "outCsv": "products.cleaned.csv",
+  "outXls": "products.cleaned.xls"
+}

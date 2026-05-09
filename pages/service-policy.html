@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Service & Policy — GoldrArt</title>
+  <link rel="icon" type="image/png" href="../logo.png">
+  <link rel="shortcut icon" type="image/png" href="../logo.png">
+  <link rel="apple-touch-icon" href="../logo.png">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .policy-wrap{max-width:980px;margin:0 auto;padding:28px 16px 40px}
+    .policy-title{text-align:center;color:var(--gold);font-weight:900;font-size:32px;margin:6px 0 18px}
+    .policy-frame{background:#0b0b0b;border:1px solid rgba(212,175,55,0.2);border-radius:16px;box-shadow:0 18px 48px rgba(0,0,0,0.55);overflow:hidden}
+    .policy-frame embed,.policy-frame iframe{width:100%;height:78vh;border:0;display:block;background:#111}
+    .policy-actions{display:flex;justify-content:center;padding:18px}
+    .policy-download{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:999px;background:linear-gradient(120deg,#f7dfb3,#d4af37);color:#111;font-weight:900;text-decoration:none;box-shadow:0 14px 30px rgba(182,139,42,0.28);border:1px solid rgba(0,0,0,0.18)}
+    .policy-download:hover{transform:translateY(-1px);box-shadow:0 18px 36px rgba(182,139,42,0.35)}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="left-actions">
+      <button id="menuBtn" class="burger" aria-label="Open navigation" aria-controls="sideDrawer" aria-expanded="false">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <a href="/" title="Home"><img src="../logo.png" alt="GoldrArt" class="logo" id="mainLogo"></a>
+    <nav class="topnav" aria-label="Main navigation">
+      <a href="/" class="nav-link">Home</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="service-policy.html" class="nav-link">Service &amp; Policy</a>
+    </nav>
+  </header>
+
+  <div id="sideDrawer" class="drawer hidden" aria-hidden="true">
+    <div class="drawer-top">
+      <button id="drawerClose" class="drawer-close" aria-label="Close menu">✕</button>
+    </div>
+    <nav class="drawer-nav" role="navigation" aria-label="Site navigation">
+      <a class="nav-item" href="/">Home</a>
+      <a class="nav-item" href="about.html">About</a>
+      <a class="nav-item" href="contact.html">Contact</a>
+      <a class="nav-item" href="service-policy.html">Service &amp; Policy</a>
+    </nav>
+  </div>
+
+  <main class="container">
+    <div class="policy-wrap">
+      <h1 class="policy-title">Service &amp; Policy</h1>
+      <div class="policy-frame">
+        <embed src="../assets/s&p.pdf" type="application/pdf" />
+      </div>
+      <div class="policy-actions">
+        <a class="policy-download" href="../assets/s&p.pdf" download>Download PDF</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="../js/notifications.js"></script>
+  <script src="../js/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+# ⚡ Quick Start - ابدأ الآن!
+
+## 🎯 في 3 دقائق:
+
+### 1️⃣ نسخ الـ ID من Google Sheet الموجود
+```
+فتح Google Sheet الموجود بتاعك
+نسخ من الرابط: https://docs.google.com/spreadsheets/d/{THIS_ID}/edit
+```
+
+### 2️⃣ فتح Google Apps Script
+```
+من Google Sheet: Extensions > Apps Script
+أو مباشر: script.google.com
+```
+
+### 3️⃣ نسخ الكود
+```
+من: /scripts/checkout_handler.gs
+الصق في: Apps Script editor
+استبدل SPREADSHEET_ID بـ الـ ID من الخطوة 1
+```
+
+### 4️⃣ Deploy
+```
+اضغط Deploy
+Web App
+Execute as: أنت
+Who has access: Anyone
+انسخ الرابط الجديد
+```
+
+### 5️⃣ تحديث index.html
+```
+السطر 462:
+const CHECKOUT_SHEET_URL = 'الرابط من الخطوة 4';
+```
+
+### ✅ انتهى!
+الآن أي طلب شراء = يظهر في Google Sheet!
+
+---
+
+## 📚 للتفاصيل:
+[اقرأ الدليل الكامل](CHECKOUT_SETUP_SIMPLE.md)
+
+---
+
+**تم الإعداد في ⏱️ 30 دقيقة تقريباً**

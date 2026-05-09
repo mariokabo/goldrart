@@ -1,0 +1,503 @@
+/* نظام الإشعارات الذهبي - متناسق مع ألوان الموقع */
+
+#notificationContainer {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999999;
+    width: calc(100vw - 16px);
+    max-width: 420px;
+    pointer-events: none;
+}
+
+.notification {
+    background: linear-gradient(135deg, #1a1510 0%, #2d2416 50%, #1a1510 100%);
+    color: #d4af37;
+    padding: 12px 14px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    box-shadow: 
+        0 10px 40px rgba(212, 175, 55, 0.3),
+        inset 0 1px 0 rgba(212, 175, 55, 0.3),
+        0 0 30px rgba(212, 175, 55, 0.15);
+    animation: slideInDown 0.5s ease, goldenGlow 3s ease infinite;
+    pointer-events: all;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(212, 175, 55, 0.5);
+}
+
+.notification-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.notification-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.notification-message {
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.notification-progress {
+    height: 3px;
+}
+
+.notification-cta-button,
+.notification-link,
+.notification-coupon .coupon-copy {
+    font-size: 12px;
+}
+
+@media (max-width: 640px) {
+    #notificationContainer {
+        top: 8px;
+        max-width: calc(100vw - 12px);
+    }
+
+    .notification {
+        padding: 10px 12px;
+        border-radius: 12px;
+    }
+
+    .notification-title {
+        font-size: 13px;
+    }
+
+    .notification-message {
+        font-size: 12px;
+    }
+}
+
+.notification::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.notification:hover::before {
+    left: 100%;
+}
+
+.notification:hover {
+    transform: translateY(-3px);
+    box-shadow: 
+        0 15px 50px rgba(212, 175, 55, 0.4),
+        inset 0 1px 0 rgba(212, 175, 55, 0.4),
+        0 0 40px rgba(212, 175, 55, 0.25);
+    border-color: rgba(212, 175, 55, 0.7);
+}
+
+/* أنواع الإشعارات - بنفس الطابع الذهبي مع اختلاف بسيط */
+.notification.success {
+    background: linear-gradient(135deg, #1a1813 0%, #2d2919 50%, #1a1813 100%);
+    border-color: rgba(180, 200, 80, 0.5);
+    color: #c8d850;
+    box-shadow: 
+        0 10px 40px rgba(180, 200, 80, 0.25),
+        inset 0 1px 0 rgba(180, 200, 80, 0.2),
+        0 0 30px rgba(180, 200, 80, 0.15);
+}
+
+.notification.success:hover {
+    box-shadow: 
+        0 15px 50px rgba(180, 200, 80, 0.35),
+        inset 0 1px 0 rgba(180, 200, 80, 0.3),
+        0 0 40px rgba(180, 200, 80, 0.2);
+}
+
+.notification.info {
+    background: linear-gradient(135deg, #1a1510 0%, #2d2416 50%, #1a1510 100%);
+    border-color: rgba(212, 175, 55, 0.6);
+    color: #d4af37;
+    box-shadow: 
+        0 10px 40px rgba(212, 175, 55, 0.3),
+        inset 0 1px 0 rgba(212, 175, 55, 0.3),
+        0 0 30px rgba(212, 175, 55, 0.2);
+}
+
+.notification.info:hover {
+    box-shadow: 
+        0 15px 50px rgba(212, 175, 55, 0.45),
+        inset 0 1px 0 rgba(212, 175, 55, 0.4),
+        0 0 40px rgba(212, 175, 55, 0.3);
+}
+
+.notification.warning {
+    background: linear-gradient(135deg, #1a1610 0%, #2d2516 50%, #1a1610 100%);
+    border-color: rgba(230, 200, 107, 0.5);
+    color: #e6c86b;
+    box-shadow: 
+        0 10px 40px rgba(230, 200, 107, 0.25),
+        inset 0 1px 0 rgba(230, 200, 107, 0.2),
+        0 0 30px rgba(230, 200, 107, 0.15);
+}
+
+.notification.warning:hover {
+    box-shadow: 
+        0 15px 50px rgba(230, 200, 107, 0.35),
+        inset 0 1px 0 rgba(230, 200, 107, 0.3),
+        0 0 40px rgba(230, 200, 107, 0.2);
+}
+
+.notification.error {
+    background: linear-gradient(135deg, #1a1012 0%, #2d1618 50%, #1a1012 100%);
+    border-color: rgba(212, 107, 107, 0.5);
+    color: #d46b6b;
+    box-shadow: 
+        0 10px 40px rgba(212, 107, 107, 0.25),
+        inset 0 1px 0 rgba(212, 107, 107, 0.2),
+        0 0 30px rgba(212, 107, 107, 0.15);
+}
+
+.notification.error:hover {
+    box-shadow: 
+        0 15px 50px rgba(212, 107, 107, 0.35),
+        inset 0 1px 0 rgba(212, 107, 107, 0.3),
+        0 0 40px rgba(212, 107, 107, 0.2);
+}
+
+/* محتوى الإشعار */
+.notification-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.notification-icon img{
+    width: 20px;
+    height: 20px;
+    display: block;
+    object-fit: contain;
+    object-position: center;
+}
+
+.notification-title {
+    font-size: 1.2em;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: inherit;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.notification-icon {
+    font-size: 1.5em;
+    animation: bounce 1s ease infinite;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.notification-close {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    color: #d4af37;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.notification-close:hover {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: rgba(212, 175, 55, 0.6);
+    transform: rotate(90deg);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+.notification-message {
+    font-size: 1em;
+    line-height: 1.5;
+    margin-bottom: 0;
+    color: rgba(212, 175, 55, 0.9);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.notification-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 20px;
+    background: rgba(212, 175, 55, 0.2);
+    border-radius: 20px;
+    color: #d4af37;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+}
+
+.notification-link:hover {
+    background: rgba(212, 175, 55, 0.3);
+    border-color: rgba(212, 175, 55, 0.6);
+    transform: translateX(-3px);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+}
+
+/* زر مميز للإشعارات - تصميم فاخر متناسق */
+.notification-cta-button {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #d4af37 0%, #b68b2a 50%, #d4af37 100%);
+    color: #0b0b0b;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.05em;
+    border-radius: 30px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 
+        0 4px 15px rgba(212, 175, 55, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        0 0 20px rgba(212, 175, 55, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.notification-cta-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s;
+}
+
+.notification-cta-button:hover::before {
+    left: 100%;
+}
+
+.notification-cta-button:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 
+        0 6px 25px rgba(212, 175, 55, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        0 0 30px rgba(212, 175, 55, 0.3);
+    background: linear-gradient(135deg, #e6c86b 0%, #d4af37 50%, #e6c86b 100%);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.notification-cta-button:active {
+    transform: translateY(0) scale(1.02);
+}
+
+/* تأثيرات للأنواع المختلفة */
+.notification.success .notification-cta-button {
+    background: linear-gradient(135deg, #c8d850 0%, #a0b040 50%, #c8d850 100%);
+    box-shadow: 
+        0 4px 15px rgba(180, 200, 80, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.notification.success .notification-cta-button:hover {
+    background: linear-gradient(135deg, #d4e060 0%, #c8d850 50%, #d4e060 100%);
+}
+
+.notification.warning .notification-cta-button {
+    background: linear-gradient(135deg, #e6c86b 0%, #d4af37 50%, #e6c86b 100%);
+}
+
+.notification.error .notification-cta-button {
+    background: linear-gradient(135deg, #d46b6b 0%, #b85555 50%, #d46b6b 100%);
+    box-shadow: 
+        0 4px 15px rgba(212, 107, 107, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* أيقونة في الزر */
+.notification-cta-button .btn-icon {
+    margin-left: 8px;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.notification-cta-button:hover .btn-icon {
+    transform: translateX(-3px);
+}
+
+/* شريط التقدم */
+.notification-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #d4af37 0%, #e6c86b 50%, #d4af37 100%);
+    border-radius: 0 0 15px 15px;
+    transition: width linear;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+
+/* الحركات */
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideOutUp {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-100px);
+    }
+}
+
+@keyframes goldenGlow {
+    0%, 100% {
+        box-shadow: 
+            0 10px 40px rgba(212, 175, 55, 0.3),
+            inset 0 1px 0 rgba(212, 175, 55, 0.3),
+            0 0 30px rgba(212, 175, 55, 0.15);
+    }
+    50% {
+        box-shadow: 
+            0 10px 50px rgba(212, 175, 55, 0.4),
+            inset 0 1px 0 rgba(212, 175, 55, 0.4),
+            0 0 40px rgba(212, 175, 55, 0.25);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.notification.hiding {
+    animation: slideOutUp 0.5s ease forwards;
+}
+
+/* استجابة للشاشات الصغيرة */
+@media (max-width: 768px) {
+    #notificationContainer {
+        width: 95%;
+        top: 10px;
+    }
+
+    .notification {
+        padding: 15px 20px;
+    }
+
+    .notification-title {
+        font-size: 1em;
+    }
+
+    .notification-message {
+        font-size: 0.9em;
+    }
+
+    .notification-close {
+        width: 25px;
+        height: 25px;
+        font-size: 16px;
+    }
+}
+
+/* تأثيرات إضافية للتألق الذهبي */
+.notification.info::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+    animation: rotate 8s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* تأثير التلألؤ الذهبي */
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.notification.info {
+    background-image: 
+        linear-gradient(135deg, #1a1510 0%, #2d2416 50%, #1a1510 100%),
+        linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+    background-size: 100% 100%, 1000px 100%;
+    animation: slideInDown 0.5s ease, shimmer 4s ease infinite, goldenGlow 3s ease infinite;
+}
+
+/* لمسة ذهبية على الحواف */
+.notification::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 15px;
+    padding: 2px;
+    background: linear-gradient(135deg, 
+        transparent 0%, 
+        rgba(212, 175, 55, 0.3) 25%, 
+        transparent 50%, 
+        rgba(212, 175, 55, 0.3) 75%, 
+        transparent 100%
+    );
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.5;
+}

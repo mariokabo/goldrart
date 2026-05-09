@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GoldrArt Structured Data - Organization",
+  "type": "object",
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "GoldrArt",
+  "url": "https://goldrartcom",
+  "logo": "https://goldrart.com/logo.png",
+  "description": "Premium fine art paintings gallery. Discover original artwork and prints for your space.",
+  "foundingDate": "2026",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "Customer Service",
+    "availableLanguage": ["Arabic", "English"]
+  },
+  "sameAs": []
+}

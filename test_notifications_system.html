@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تجربة الإشعارات - Azan Shop</title>
+    <link rel="stylesheet" href="css/notifications.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .test-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .btn-group {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .test-btn {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(253, 160, 133, 0.4);
+        }
+
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(253, 160, 133, 0.6);
+        }
+
+        .test-btn.success {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+        }
+
+        .test-btn.warning {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .test-btn.error {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            border-right: 4px solid #667eea;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            width: 100%;
+        }
+
+        .back-link:hover {
+            color: #764ba2;
+        }
+
+        .inline-icon {
+            width: 18px;
+            height: 18px;
+            display: inline-block;
+            vertical-align: -3px;
+            margin-left: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div id="notificationContainer"></div>
+
+    <div class="test-container">
+        <h1><img class="inline-icon" src="assets/icons/png/info.png" alt="Test">اختبار نظام الإشعارات</h1>
+        
+        <div class="btn-group">
+            <button class="test-btn" onclick="testNotification1()">
+                <img class="inline-icon" src="assets/icons/png/info.png" alt="Info">إشعار ذهبي (معلومات)
+            </button>
+            
+            <button class="test-btn success" onclick="testNotification2()">
+                <img class="inline-icon" src="assets/icons/png/check.png" alt="Success">إشعار أخضر (نجاح)
+            </button>
+            
+            <button class="test-btn warning" onclick="testNotification3()">
+                <img class="inline-icon" src="assets/icons/png/warning.png" alt="Warning">إشعار برتقالي (تحذير)
+            </button>
+            
+            <button class="test-btn error" onclick="testNotification4()">
+                <img class="inline-icon" src="assets/icons/png/error.png" alt="Error">إشعار أحمر (خطأ)
+            </button>
+            
+            <button class="test-btn" onclick="testNotification5()">
+                إشعار مع رابط
+            </button>
+            
+            <button class="test-btn" onclick="testNotification6()">
+                إشعار ثابت (لا يختفي)
+            </button>
+            
+            <button class="test-btn" onclick="testNotification7()">
+                إشعار سريع (3 ثواني)
+            </button>
+            
+            <button class="test-btn" onclick="testNotification8()">
+                إشعار مخصص
+            </button>
+            
+            <button class="test-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);" onclick="testNotification9()">
+                إشعار بزر مميز أبيض
+            </button>
+            
+            <button class="test-btn" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);" onclick="testNotification10()">
+                إشعار عرض خاص بزر
+            </button>
+        </div>
+
+        <div class="info-box">
+            <h3><img class="inline-icon" src="https://goldrart.com/assets/icons/png/read.png" alt="Info">معلومات</h3>
+            <p>اضغط على أي زر لتجربة نوع الإشعار المختلف. الإشعارات تظهر في أعلى الصفحة بتصميم ذهبي أنيق!</p>
+        </div>
+
+        <a href="index.html" class="back-link">← العودة للصفحة الرئيسية</a>
+    </div>
+
+    <script src="js/notifications.js"></script>
+    <script>
+        function testNotification1() {
+            showNotification(
+                'معلومة مهمة',
+                'هذا إشعار ذهبي جميل يظهر لمدة 8 ثواني',
+                'info',
+                '',
+                8000
+            );
+        }
+
+        function testNotification2() {
+            showNotification(
+                'تم بنجاح',
+                'تمت العملية بنجاح! هذا الإشعار يستخدم للعمليات الناجحة',
+                'success',
+                '',
+                8000
+            );
+        }
+
+        function testNotification3() {
+            showNotification(
+                'تنبيه',
+                'انتبه! هذا إشعار تحذيري باللون البرتقالي',
+                'warning',
+                '',
+                8000
+            );
+        }
+
+        function testNotification4() {
+            showNotification(
+                'خطأ',
+                'حدث خطأ! هذا الإشعار يستخدم للأخطاء المهمة',
+                'error',
+                '',
+                8000
+            );
+        }
+
+        function testNotification5() {
+            showNotification(
+                'عرض خاص',
+                'لدينا عرض خاص لك! اضغط للمشاهدة',
+                'info',
+                'pages/inspiration.html',
+                10000
+            );
+        }
+
+        function testNotification6() {
+            showNotification(
+                'إعلان مهم',
+                'هذا الإشعار لا يختفي تلقائياً - يجب إغلاقه يدوياً',
+                'info',
+                '',
+                0,
+                true
+            );
+        }
+
+        function testNotification7() {
+            showNotification(
+                'سريع',
+                'إشعار سريع يختفي خلال 3 ثواني فقط!',
+                'info',
+                '',
+                3000
+            );
+        }
+
+        function testNotification8() {
+            showNotification(
+                'مبروك',
+                'حصلت على خصم 50%! استخدم الكود: GOLD50',
+                'success',
+                'pages/inspiration.html',
+                12000
+            );
+        }
+
+        function testNotification9() {
+            showNotification(
+                'عرض حصري',
+                'خصم 70% على جميع اللوحات الفنية الآن!',
+                'info',
+                '',
+                10000,
+                false,
+                'تسوق الآن',
+                'pages/inspiration.html'
+            );
+        }
+
+        function testNotification10() {
+            showNotification(
+                'هدية خاصة',
+                'احصل على لوحة مجانية مع كل طلبين! عرض لمدة محدودة',
+                'warning',
+                '',
+                12000,
+                false,
+                'احصل على العرض',
+                'pages/inspiration.html'
+            );
+        }
+
+        // عرض إشعار ترحيبي عند تحميل الصفحة
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                showNotification(
+                    'مرحباً بك',
+                    'هذه صفحة اختبار نظام الإشعارات الذهبي الأنيق',
+                    'info',
+                    '',
+                    6000
+                );
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

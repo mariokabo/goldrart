@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>مركز الإشعارات الذهبي</title>
+  <link rel="stylesheet" href="../css/notifications.css" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle at top, #1b1b1b, #0f0f0f 60%);
+      color: #f5f0e6;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: linear-gradient(160deg, rgba(36,30,20,0.98), rgba(20,17,12,0.98));
+      border: 1px solid rgba(212,175,55,0.25);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #f5d88f;
+    }
+    .subtitle { color: #c8b680; font-size: 14px; }
+    .badge {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(212,175,55,0.35);
+      color: #e9d49b;
+      font-size: 12px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: rgba(17, 14, 10, 0.85);
+      border: 1px solid rgba(212,175,55,0.18);
+      border-radius: 14px;
+      padding: 16px;
+    }
+    label { display: block; margin-bottom: 6px; color: #e9d49b; font-weight: 600; font-size: 13px; }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(212,175,55,0.2);
+      background: #14110c;
+      color: #f5f0e6;
+      outline: none;
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    .row { display: flex; gap: 12px; }
+    .row > * { flex: 1; }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .btn {
+      background: linear-gradient(120deg, #f7dfb3, #d4af37);
+      color: #111;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .btn.secondary {
+      background: transparent;
+      color: #f5d88f;
+      border: 1px solid rgba(212,175,55,0.35);
+    }
+    .btn.danger { background: #a83232; color: #fff; }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(0,0,0,0.35); }
+    .log {
+      margin-top: 18px;
+      background: #0f0d09;
+      border: 1px solid rgba(212,175,55,0.2);
+      border-radius: 12px;
+      padding: 14px;
+      max-height: 240px;
+      overflow: auto;
+      font-size: 12px;
+    }
+    .log-entry { margin-bottom: 8px; }
+    .log-entry.ok { color: #7ae582; }
+    .log-entry.warn { color: #f5d88f; }
+    .log-entry.err { color: #ff8b8b; }
+    .footer-note { margin-top: 10px; font-size: 12px; color: #b4a27a; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div>
+        <div class="title">مركز الإشعارات الذهبي</div>
+        <div class="subtitle">إدارة إشعارات الموقع وربطها تلقائيًا مع Google Sheets</div>
+      </div>
+      <div class="badge">Goldrart Admin</div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <label for="title">عنوان الإشعار</label>
+        <input id="title" type="text" placeholder="مثال: عرض خاص اليوم فقط" />
+      </div>
+      <div class="card">
+        <label for="type">نوع الإشعار</label>
+        <select id="type">
+          <option value="info">معلومات (ذهبي)</option>
+          <option value="success">نجاح (أخضر)</option>
+          <option value="warning">تحذير (برتقالي)</option>
+          <option value="error">خطأ (أحمر)</option>
+        </select>
+      </div>
+      <div class="card">
+        <label for="duration">مدة الظهور (ثانية)</label>
+        <input id="duration" type="number" min="1" max="120" value="8" />
+      </div>
+      <div class="card">
+        <label for="persistent">إشعار ثابت؟</label>
+        <select id="persistent">
+          <option value="false" selected>لا</option>
+          <option value="true">نعم (لا يختفي تلقائيًا)</option>
+        </select>
+      </div>
+      <div class="card" style="grid-column: 1 / -1;">
+        <label for="message">رسالة الإشعار</label>
+        <textarea id="message" placeholder="اكتب تفاصيل الإشعار هنا..."></textarea>
+      </div>
+      <div class="card">
+        <label for="link">رابط عادي (اختياري)</label>
+        <input id="link" type="url" placeholder="https://goldrart.com/pages/inspiration.html" />
+      </div>
+      <div class="card">
+        <label for="buttonText">نص زر مميز (اختياري)</label>
+        <input id="buttonText" type="text" placeholder="تسوق الآن" />
+      </div>
+      <div class="card">
+        <label for="buttonLink">رابط الزر المميز (اختياري)</label>
+        <input id="buttonLink" type="url" placeholder="https://goldrart.com" />
+      </div>
+      <div class="card">
+        <label for="expiresIn">ينتهي بعد (ساعات)</label>
+        <input id="expiresIn" type="number" min="0" value="0" />
+      </div>
+      <div class="card">
+        <label for="showOnce">يظهر مرة واحدة فقط</label>
+        <select id="showOnce">
+          <option value="false" selected>لا</option>
+          <option value="true">نعم</option>
+        </select>
+      </div>
+      <div class="card">
+        <label for="maxViews">عدد مرات الظهور (0 = بدون حد)</label>
+        <input id="maxViews" type="number" min="0" value="0" />
+      </div>
+      <div class="card">
+        <label for="couponCode">كود كوبون (اختياري)</label>
+        <input id="couponCode" type="text" placeholder="GOLD50" />
+      </div>
+      <div class="card">
+        <label for="sendPush">إرسال push notification</label>
+        <select id="sendPush">
+          <option value="false" selected>لا</option>
+          <option value="true">نعم</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn" onclick="sendNotification()"><img class="inline-icon" src="../assets/icons/png/send.png" alt="Send">إرسال الإشعار</button>
+      <button class="btn secondary" onclick="previewNotification()"><img class="inline-icon" src="../assets/icons/png/preview.png" alt="Preview">معاينة</button>
+      <button class="btn secondary" onclick="readNotification()"><img class="inline-icon" src="../assets/icons/png/read.png" alt="Read">قراءة آخر إشعار</button>
+      <button class="btn danger" onclick="deleteNotification()"><img class="inline-icon" src="../assets/icons/png/delete.png" alt="Delete">حذف الإشعار</button>
+    </div>
+
+    <div id="notificationContainer"></div>
+
+    <div class="log" id="logBox"></div>
+    <div class="footer-note">تُحفظ كل عملية تلقائيًا في Google Sheets عن طريق save_notification.php.</div>
+  </div>
+
+  <script>
+    const API_URL = '../save_notification.php';
+
+    // تحميل الإشعارات عند فتح الصفحة
+    window.addEventListener('load', async function() {
+      if (typeof checkForNotifications === 'function') {
+        await checkForNotifications();
+      }
+    });
+
+    function log(message, type = 'ok'){
+      const box = document.getElementById('logBox');
+      const div = document.createElement('div');
+      div.className = `log-entry ${type}`;
+      div.textContent = `[${new Date().toLocaleTimeString('ar-EG')}] ${message}`;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function buildPayload(){
+      const expiresIn = Number(document.getElementById('expiresIn').value || 0);
+      let expiresAt = null;
+      if (expiresIn > 0) {
+        const now = new Date();
+        now.setHours(now.getHours() + expiresIn);
+        expiresAt = now.toISOString();
+      }
+
+      return {
+        id: Date.now() + Math.random().toString(36).slice(2),
+        title: document.getElementById('title').value.trim(),
+        message: document.getElementById('message').value.trim(),
+        type: document.getElementById('type').value,
+        link: document.getElementById('link').value.trim(),
+        buttonText: document.getElementById('buttonText').value.trim(),
+        buttonLink: document.getElementById('buttonLink').value.trim(),
+        duration: Number(document.getElementById('duration').value || 8) * 1000,
+        persistent: document.getElementById('persistent').value === 'true',
+        expiresAt,
+        showOnce: document.getElementById('showOnce').value === 'true',
+        maxViews: Number(document.getElementById('maxViews').value || 0),
+        couponCode: document.getElementById('couponCode').value.trim(),
+        sendPush: document.getElementById('sendPush').value === 'true',
+        active: true,
+        createdAt: new Date().toISOString()
+      };
+    }
+
+    async function sendNotification(){
+      const payload = buildPayload();
+      if (!payload.title || !payload.message) {
+        log('العنوان والرسالة مطلوبان.', 'err');
+        return;
+      }
+      log('جاري إرسال الإشعار...', 'warn');
+      try{
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        if (data.success) {
+          log('تم الإرسال وحفظ الإشعار بنجاح.', 'ok');
+        } else {
+          log(data.error || 'فشل إرسال الإشعار.', 'err');
+        }
+      }catch(err){
+        log('خطأ في الاتصال: ' + err.message, 'err');
+      }
+    }
+
+    function previewNotification(){
+      const payload = buildPayload();
+      if (!payload.title || !payload.message) {
+        log('العنوان والرسالة مطلوبان للمعاينة.', 'err');
+        return;
+      }
+      showNotification(
+        payload.title,
+        payload.message,
+        payload.type,
+        payload.link,
+        payload.persistent ? 0 : payload.duration,
+        payload.persistent,
+        payload.buttonText,
+        payload.buttonLink,
+        payload.couponCode
+      );
+      log('تم عرض معاينة الإشعار.', 'ok');
+    }
+
+    async function readNotification(){
+      log('جاري قراءة آخر إشعار...', 'warn');
+      try{
+        const response = await fetch(API_URL, { method: 'GET' });
+        const data = await response.json();
+        if (data.success && data.notification) {
+          log('تم قراءة إشعار موجود: ' + (data.notification.title || ''), 'ok');
+        } else {
+          log('لا يوجد إشعار نشط حالياً.', 'warn');
+        }
+      }catch(err){
+        log('خطأ في القراءة: ' + err.message, 'err');
+      }
+    }
+
+    async function deleteNotification(){
+      log('جاري حذف الإشعار...', 'warn');
+      try{
+        const response = await fetch(API_URL, { method: 'DELETE' });
+        const data = await response.json();
+        if (data.success) {
+          log('تم حذف الإشعار بنجاح.', 'ok');
+        } else {
+          log(data.error || 'فشل حذف الإشعار.', 'err');
+        }
+      }catch(err){
+        log('خطأ في الحذف: ' + err.message, 'err');
+      }
+    }
+  </script>
+  <script src="../js/notifications.js"></script>
+</body>
+</html>

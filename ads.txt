@@ -1,0 +1,10 @@
+# GoldrArt ads.txt file
+# For Google Ads and programmatic advertising transparency
+# Format: https://iabtechlab.com/ads-txt/
+
+# Direct publisher contact (replace with your actual publisher ID)
+google.com, pub-xxxxxxxxxxxxxxxx, DIRECT, f08c47fec0942fa0
+
+# If you use ad networks or have other arrangements, add them here:
+# Example format:
+# example.com, account-id, RESELLER, certification-authority-id

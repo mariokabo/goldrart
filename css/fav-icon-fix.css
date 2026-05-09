@@ -1,0 +1,47 @@
+/*
+  Custom style for the black-heart (favorite) icon on product cards
+  Makes the icon very small and perfectly fit the golden square at the top right of each product card
+*/
+
+.fav-btn img {
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 22px !important;
+  min-height: 22px !important;
+  max-width: 26px !important;
+  max-height: 26px !important;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0;
+  padding: 0;
+  box-shadow: none;
+  border-radius: 6px;
+}
+
+/* Make the fav-btn itself a bit larger */
+.fav-btn {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  max-width: 36px !important;
+  max-height: 36px !important;
+  padding: 3px !important;
+  border: none;
+  background: rgba(0,0,0,0.88) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  border-radius: 12px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  transition: background 0.18s;
+}
+
+/* Optional: highlight when active */
+.fav-btn.active img {
+  filter: drop-shadow(0 0 2px gold) brightness(1.2);
+}

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار نظام الإشعارات - PHP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .status {
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
+            overflow-x: auto;
+            direction: ltr;
+        }
+
+        .inline-icon {
+            width: 18px;
+            height: 18px;
+            display: inline-block;
+            vertical-align: -3px;
+            margin-left: 6px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← العودة للصفحة الرئيسية</a>
+        
+        <h1><img class="inline-icon" src="assets/icons/png/info.png" alt="Test">اختبار نظام الإشعارات PHP</h1>
+
+        <div id="status"></div>
+
+        <div style="text-align: center;">
+            <button onclick="testRead()"><img class="inline-icon" src="assets/icons/png/read.png" alt="Read">قراءة الإشعار الحالي</button>
+            <button onclick="testSend()"><img class="inline-icon" src="assets/icons/png/send.png" alt="Send">إرسال إشعار تجريبي</button>
+            <button onclick="testDelete()"><img class="inline-icon" src="assets/icons/png/delete.png" alt="Delete">حذف الإشعار</button>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function testRead() {
+            const statusDiv = document.getElementById('status');
+            const resultDiv = document.getElementById('result');
+            
+            statusDiv.innerHTML = '<div class="status info">جاري القراءة من السيرفر...</div>';
+
+            try {
+                const response = await fetch('save_notification.php', {
+                    method: 'GET'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    statusDiv.innerHTML = '<div class="status success">تم القراءة بنجاح</div>';
+                    resultDiv.innerHTML = '<h3>النتيجة:</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                } else {
+                    statusDiv.innerHTML = '<div class="status error">فشل: ' + data.error + '</div>';
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '<div class="status error">خطأ: ' + error.message + '</div>';
+            }
+        }
+
+        async function testSend() {
+            const statusDiv = document.getElementById('status');
+            const resultDiv = document.getElementById('result');
+            
+            statusDiv.innerHTML = '<div class="status info">جاري إرسال إشعار تجريبي...</div>';
+
+            const testNotification = {
+                title: 'اختبار ناجح',
+                message: 'هذا إشعار تجريبي من صفحة الاختبار',
+                type: 'success',
+                link: '',
+                buttonText: 'رائع!',
+                buttonLink: 'index.html',
+                duration: 10000,
+                persistent: false,
+                expiresAt: null,
+                showOnce: false
+            };
+
+            try {
+                const response = await fetch('save_notification.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testNotification)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    statusDiv.innerHTML = '<div class="status success">تم الإرسال بنجاح! افتح أي صفحة لمشاهدة الإشعار.</div>';
+                    resultDiv.innerHTML = '<h3>النتيجة:</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                } else {
+                    statusDiv.innerHTML = '<div class="status error">فشل: ' + data.error + '</div>';
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '<div class="status error">خطأ: ' + error.message + '</div>';
+            }
+        }
+
+        async function testDelete() {
+            const statusDiv = document.getElementById('status');
+            const resultDiv = document.getElementById('result');
+            
+            statusDiv.innerHTML = '<div class="status info">جاري الحذف...</div>';
+
+            try {
+                const response = await fetch('save_notification.php', {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    statusDiv.innerHTML = '<div class="status success">تم الحذف بنجاح</div>';
+                    resultDiv.innerHTML = '<h3>النتيجة:</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                } else {
+                    statusDiv.innerHTML = '<div class="status error">فشل: ' + data.error + '</div>';
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '<div class="status error">خطأ: ' + error.message + '</div>';
+            }
+        }
+
+        // اختبار تلقائي عند التحميل
+        window.addEventListener('load', testRead);
+    </script>
+</body>
+</html>

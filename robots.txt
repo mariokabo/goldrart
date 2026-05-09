@@ -1,0 +1,15 @@
+# GoldrArt - robots.txt
+# Allow all search engines to index the site
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /netlify/
+Disallow: /tools/
+Disallow: /restore_points/
+
+# Sitemap location
+Sitemap: https://goldrart.unaux.com/sitemap.xml
+
+# Crawl-delay for better server performance
+Crawl-delay: 1

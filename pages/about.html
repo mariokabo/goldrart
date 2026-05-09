@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17864980228"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'AW-17864980228');
+  </script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>About &mdash; GoldrArt <img src="../assets/icons/png/GoldrArt-Verify.png" alt="Verified" style="width:14px;height:14px;vertical-align:middle;margin:0 2px 0 2px;"> </title>
+  <link rel="icon" type="image/png" href="../logo.png">
+  <link rel="shortcut icon" type="image/png" href="../logo.png">
+  <link rel="apple-touch-icon" href="../logo.png">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/notifications.css">
+  <link rel="preload" href="../assets/old/Dreaming%20Holiday.otf" as="font" type="font/otf" crossorigin> <!-- preload DreamingHoliday to reduce FOIT -->
+</head>
+<body>
+  <!-- حاوية الإشعارات -->
+  <div id="notificationContainer"></div>
+  <header class="topbar">
+    <button id="menuBtn" class="burger" aria-label="Open navigation" aria-controls="sideDrawer" aria-expanded="false">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+    <img src="../logo.png" alt="Goldrart" class="logo" id="mainLogo"><img src="../assets/icons/png/GoldrArt-Verify.png" alt="Verified" style="width:14px;height:14px;vertical-align:middle;margin:0 2px 0 2px;">
+    <nav class="topnav" aria-label="Main navigation">
+      <a href="/" class="nav-link">Home</a>
+      <a href="painting-art.html" class="nav-link">Painting Art</a>
+      <a href="canvas-print.html" class="nav-link">Canvas Prints</a>
+      <a href="inspiration.html" class="nav-link">Inspiration</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </nav>
+    <div class="actions" style="position:absolute;right:18px;top:10px;display:flex;align-items:center;gap:10px">
+      <button id="favBtn" class="icon-btn" aria-label="Favorites">
+        <img class="icon-img" src="../assets/icons/png/heart.png" alt="Favorites">
+      </button> 
+      <button id="cartBtn" class="icon-btn" aria-label="Cart">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;background:linear-gradient(135deg,#f7dfb3,#d4af37);border-radius:8px;margin-right:4px;">
+          <img class="icon-img" src="../assets/icons/png/cart.png" alt="Cart" style="width:22px;height:22px;filter:drop-shadow(0 2px 6px #b8912b88);">
+        </span>
+        <span id="cartCount" class="badge">0</span>
+      </button> 
+    </div>
+  </header>
+
+  <div id="sideDrawer" class="drawer hidden" aria-hidden="true">
+    <div class="drawer-top">
+      <img src="../logo.png" alt="GoldrArt" class="drawer-brand">
+      <div class="search-wrap" style="margin-top:10px">
+        <input id="searchInput" placeholder="اكتب اسم المنتج أو المقاس (مثال: 100×70)" autocomplete="off" aria-label="بحث بالاسم أو المقاس">
+        <button id="searchBtn" class="icon-btn" aria-label="Search"><img class="icon-img" src="../assets/icons/png/search.png" alt="Search"></button>
+      </div>
+      <div id="searchSuggestions" class="suggestions" style="display:none"></div>
+      <button id="waQuick" class="wa-btn" style="margin-top:10px">Contact on WhatsApp</button>
+    </div>
+    <nav class="drawer-nav" role="navigation" aria-label="Site navigation">
+      <a class="nav-item" href="/">Home</a>
+      <div id="dynamicCategories"></div>
+      <a class="nav-sub" href="inspiration.html">Inspiration</a>
+      <a class="nav-sub" href="about.html">About</a>
+      <a class="nav-sub" href="contact.html">Contact</a>
+    </nav>
+  </div>
+
+  <main class="container" id="pageMain" data-page="about">
+    <section class="hero">
+      <h1 id="siteTitle"><img src="../logo.png" alt="GoldrArt" class="site-title-img"><img src="../assets/icons/png/GoldrArt-Verify.png" alt="Verified" style="width:14px;height:14px;vertical-align:middle;margin:0 2px 0 2px;"></h1>
+      <p class="tag">About GoldrArt <img src="../assets/icons/png/GoldrArt-Verify.png" alt="Verified" style="width:14px;height:14px;vertical-align:middle;margin:0 2px 0 2px;"> <span style="margin:0 2px;">&mdash;</span> our story, mission and creative process.</p>
+    </section>
+
+    <section class="content about-grid">
+      <div class="about-card">
+        <div class="about-card-head">
+          <h2>GoldrArt <img src="../assets/icons/png/GoldrArt-Verify.png" alt="Verified" style="width:14px;height:14px;vertical-align:middle;margin:0 2px 0 2px;"> is a studio for people who love art that feels personal.</h2>
+        </div>
+        <p class="lede">We blend handcrafted techniques, bold printing, and thoughtful framing so every piece arrives gallery-ready. From calm neutrals to statement gradients, each collection is designed to live beautifully in modern homes.</p>
+      </div>
+
+      <div class="about-card">
+        <h3>How we work</h3>
+        <p>Our artists sketch by hand, refine digitally, then print on museum-grade canvas with pigment inks for deep blacks and luminous golds. Every order is QC’d by the same crew who designed it, so the texture, color, and proportions stay true to the mood boards you fell for.</p>
+        <p>We keep a tight edit of frames, sizes, and finishes so you can mix pieces confidently across rooms&mdash;no more guesswork when you want a cohesive wall.</p>
+      </div>
+
+      <div class="about-card">
+        <h3>Styles we love</h3>
+        <ul class="about-list">
+          <li><strong>Realistic & Portrait:</strong> Quiet detail and honest light for heritage-inspired walls.</li>
+          <li><strong>Abstract & Gradient:</strong> Color-driven compositions that set the mood of a space.</li>
+          <li><strong>Decorative:</strong> Pattern-led pieces with floral, calligraphic, or geometric rhythms.</li>
+          <li><strong>Surreal:</strong> Dreamlike layers that add mystery without overpowering a room.</li>
+          <li><strong>Impressionist:</strong> Lively brushwork that captures fleeting light and motion.</li>
+        </ul>
+      </div>
+
+      <div class="about-card">
+        <h3>Formats we craft for you</h3>
+        <ul class="about-list">
+          <li><strong>Pencil, Ink, Charcoal:</strong> High-contrast sketches for collectors who love raw texture.</li>
+          <li><strong>Stippling & Line:</strong> Precision dot and line work that holds up at large scales.</li>
+          <li><strong>Cartoon & Caricature:</strong> Playful storytelling with balanced exaggeration.</li>
+          <li><strong>Sketches & Preparatory Studies:</strong> Fast notes that capture gesture and proportion.</li>
+          <li><strong><a id="adminTrigger" class="admin-link" href="#" aria-label="Open admin">Geometric Drawing</a>:</strong> Measured layouts that keep angles perfect while staying easy to interpret.</li>
+        </ul>
+        <p>Whether you are curating a single statement piece or filling an entire room, GoldrArt <img src="../assets/icons/png/GoldrArt-Verify.png" alt="Verified" style="width:14px;height:14px;vertical-align:middle;margin:0 2px 0 2px;"> is here to guide sizing, framing, and placement so the art feels made for your space.</p>
+      </div>
+    </section>
+  </main>
+
+  <div class="download-ribbon download-ribbon--bottom" role="banner">
+    <div class="download-ribbon__inner">
+      <div class="download-ribbon__marquee" aria-hidden="true">
+        <div class="download-ribbon__track">
+          <span>Official GoldrArt Android app <img src="../assets/icons/png/bluecheckmark.png" alt="Verified" style="width:18px;height:18px;vertical-align:middle;margin:0 6px 0 6px;"> smooth <img src="../assets/icons/png/bluecheckmark.png" alt="Verified" style="width:18px;height:18px;vertical-align:middle;margin:0 6px 0 6px;"> secure <img src="../assets/icons/png/bluecheckmark.png" alt="Verified" style="width:18px;height:18px;vertical-align:middle;margin:0 6px 0 6px;"> only 9 MB</span>
+          <span>Get the app now <img src="../assets/icons/png/bluecheckmark.png" alt="Verified" style="width:18px;height:18px;vertical-align:middle;margin:0 6px 0 6px;"> synced with web <img src="../assets/icons/png/bluecheckmark.png" alt="Verified" style="width:18px;height:18px;vertical-align:middle;margin:0 6px 0 6px;"> premium GoldrArt experience</span>
+          <span>Fast loads <img src="../assets/icons/png/bluecheckmark.png" alt="Verified" style="width:18px;height:18px;vertical-align:middle;margin:0 6px 0 6px;"> elegant visuals <img src="../assets/icons/png/bluecheckmark.png" alt="Verified" style="width:18px;height:18px;vertical-align:middle;margin:0 6px 0 6px;"> GoldrArt Android ready</span>
+        </div>
+      </div>
+      <a class="download-ribbon__btn" href="#app-download" onclick="event.preventDefault(); alert('تطبيق GoldrArt قريباً على Google Play Store');" rel="noopener">Coming Soon</a>
+    </div>
+    <div class="sr-only">GoldrArt Android app coming soon to Google Play Store.</div>
+  </div>
+
+  <footer class="site-footer-wrap">
+    <!-- simplified footer (copy from main site) -->
+    <div class="site-footer">
+      <div class="inner">
+        <div class="brand">
+          <img src="../logo.png" alt="Goldrart">
+          <div class="brand-line" style="color:#bbb">Goldrart <img src="../assets/icons/png/GoldrArt-Verify.png" alt="Verified" style="width:14px;height:14px;vertical-align:middle;margin:0 2px 0 2px;"> <span style="margin:0 2px;">&mdash;</span> Fine Painting Gallery</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+          <div class="socials">
+            <a href="#" title="Facebook" aria-label="Facebook"></a>
+            <a href="#" title="WhatsApp" aria-label="WhatsApp"></a>
+            <a href="#" title="Telegram" aria-label="Telegram"></a>
+            <a href="#" title="Instagram" aria-label="Instagram"></a>
+            <a href="#" title="TikTok" aria-label="TikTok"></a>
+          </div>
+          <div style="font-size:12px;color:#c9b26a;font-weight:800;letter-spacing:0.3px;display:flex;align-items:center;gap:6px">Official GoldrArt Website &mdash; Credits: Maru_Faltas <img src="../assets/icons/png/verify.gif" alt="Verified" style="width:18px;height:18px;vertical-align:middle;"> (All rights reserved)</div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div id="cartModal" class="modal hidden">
+    <div class="modal-panel">
+      <button class="modal-close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6L18 18M6 18L18 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+        <div style="width:44px;height:44px;border-radius:10px;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#000;font-weight:900">
+          <img src="../assets/icons/png/cart.png" alt="Cart" style="width:22px;height:22px">
+        </div>
+        <div>
+          <h3 style="margin:0">Your Cart</h3>
+          <div style="color:#bbb;font-size:13px">Review items and quantities</div>
+        </div>
+      </div>
+      <div id="cartList"></div>
+      <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+        <input id="couponInput" name="coupon" autocomplete="off" placeholder="Coupon code" style="flex:1;padding:8px;border-radius:8px;border:0;background:#222;color:#fff">
+        <button id="applyCoupon" class="gold">Apply</button>
+      </div>
+      <div id="couponMsg" style="color:#afa;margin-top:8px"></div>
+      <div class="modal-actions">
+        <button id="checkoutBtn" class="gold">Proceed to Checkout</button>
+        <button id="closeCart">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="thankYouModal" class="modal hidden">
+    <div class="modal-panel" style="text-align:center;max-width:420px">
+      <button class="modal-close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6L18 18M6 18L18 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div style="font-size:44px;color:var(--gold)">
+        <img src="../assets/icons/png/heart.png" alt="Favorites" style="width:36px;height:36px">
+      </div>
+      <h3>Thank you!</h3>
+      <div style="color:#ddd;margin-bottom:12px">We've received your order request. We'll contact you shortly via WhatsApp.</div>
+      <button onclick="document.getElementById('thankYouModal').classList.add('hidden');" class="gold">Close</button>
+    </div>
+  </div>
+
+  <div id="favoritesModal" class="modal hidden">
+    <div class="modal-panel">
+      <button class="modal-close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6L18 18M6 18L18 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <h3>Your Favorites</h3>
+      <div id="favList"></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:12px"><button id="closeFav">Close</button></div>
+    </div>
+  </div>
+
+  <div id="productModal" class="modal hidden">
+    <div class="modal-panel" style="max-width:900px;display:flex;gap:12px">
+      <button class="modal-close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6L18 18M6 18L18 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div style="flex:1;display:flex;flex-direction:column;gap:8px;align-items:center">
+        <img id="pm_main" src="../mini.png" alt="product" style="max-width:100%;height:420px;object-fit:contain;cursor:zoom-in;border-radius:8px">
+        <div id="pm_thumbs" style="display:flex;gap:8px;overflow:auto"></div>
+      </div>
+      <div style="width:360px">
+        <h3 id="pm_title"></h3>
+        <div id="pm_desc" style="color:#ddd;margin-bottom:8px"></div>
+        <div id="pm_variants"></div>
+        <div style="margin-top:12px">
+          <button id="pm_add" class="btn">Add To Cart</button>
+          <button id="pm_close" style="margin-left:8px">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="beforeCheckout" class="modal hidden">
+    <div class="modal-panel warn" role="dialog" aria-labelledby="beforeTitle" aria-modal="true">
+      <div class="warn-head"><img class="inline-icon" src="https://goldrart.com/assets/icons/png/warning.png" alt="Warning"><strong id="beforeTitle">Before confirming your order</strong></div>
+      <p style="margin-top:12px;color:#ddd">To ensure color accuracy, please turn off Night Mode / Blue Light Filter and set your screen brightness to 100% before confirming your order. Colors may appear differently when those settings are enabled.</p>
+      <div style="display:flex;justify-content:center;margin-top:18px"><button id="awareBtn" class="gold"><img class="inline-icon" src="https://goldrart.com/assets/icons/png/check.png" alt="OK">I understand</button></div>
+    </div>
+  </div>
+
+  <div id="checkoutModal" class="modal hidden">
+    <div class="modal-panel">
+      <h3>Checkout</h3>
+      <form id="checkoutForm">
+        <label class="sr-only" for="checkout_name">Full name</label>
+        <input id="checkout_name" name="name" autocomplete="name" placeholder="Full name" required>
+        <label class="sr-only" for="checkout_address">Address</label>
+        <input id="checkout_address" name="address" autocomplete="street-address" placeholder="Address (street & number)" required>
+        <label class="sr-only" for="checkout_gov">Governorate</label>
+        <input id="checkout_gov" name="governorate" autocomplete="address-level1" placeholder="Governorate" required>
+        <label class="sr-only" for="checkout_city">City</label>
+        <input id="checkout_city" name="city" autocomplete="address-level2" placeholder="City" required>
+        <label class="sr-only" for="checkout_phone">Phone</label>
+        <input id="checkout_phone" name="phone" autocomplete="tel" placeholder="Phone number" required>
+        <label class="sr-only" for="checkout_email">Email</label>
+        <input id="checkout_email" name="email" autocomplete="email" placeholder="Email (optional)">
+        <label>Payment method</label>
+        <select name="paymethod">
+          <option>Cash on Delivery</option>
+          <option>Card (Visa/Master)</option>
+          <option>eWallet</option>
+          <option>Instapay Transfer</option>
+        </select>
+        <div class="form-actions">
+          <button id="sendOrder" class="gold">Send Order via WhatsApp</button>
+          <button id="cancelCheckout" type="button">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Login Modal -->
+  <div id="adminLogin" class="modal hidden">
+    <div class="modal-panel">
+      <h3>Admin Login</h3>
+      <p>Enter admin password to continue.</p>
+      <input id="adminPass" name="admin_password" type="password" autocomplete="current-password" placeholder="Password">
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button id="adminLoginBtn" class="gold">Login</button>
+        <button id="adminCancel">Cancel</button>
+      </div>
+      <div id="adminMsg" style="margin-top:10px;color:#8f8"></div>
+    </div>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="adminPanel" class="modal hidden">
+    <div class="modal-panel" style="max-width:900px">
+      <h2>Goldrart Admin</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+        <button id="importCsvBtn" class="admin-btn">Import products (CSV)</button>
+        <input id="importCsvFile" type="file" accept=".csv" style="display:none">
+        <button id="addProductBtn" class="admin-btn">Add Single Product</button>
+        <button id="downloadJson" class="admin-btn">Download JSON</button>
+        <button id="downloadCsv" class="admin-btn">Download CSV</button>
+        <button id="manageCoupons" class="admin-btn">Manage Coupons</button>
+        <button id="manageNotifs" class="admin-btn">Manage Notifications</button>
+        <button id="managePages" class="admin-btn">Manage Pages</button>
+        <button id="manageInspiration" class="admin-btn">Manage Inspiration</button>
+        <button id="configPublishBtn" class="admin-btn">Publish Config</button>
+        <button id="editLogoBtn" class="admin-btn">Change Logo</button>
+      </div>
+
+      <div id="adminMain" style="overflow:auto"></div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
+        <button id="adminClose" class="gold">Close Admin</button>
+      </div>
+    </div>
+  </div>
+
+  <button id="backToTop" class="back-to-top" aria-label="Back to top" title="Back to top">↑</button>
+
+  <footer style="text-align:center;padding:20px;color:#999;border-top:1px solid #333;margin-top:40px;font-size:13px">
+    <div style="margin-bottom:10px">
+      <a href="privacy.html" style="color:#b8912b;text-decoration:none;margin:0 10px">Privacy Policy</a>
+      <span>|</span>
+      <a href="terms.html" style="color:#b8912b;text-decoration:none;margin:0 10px">Terms of Service</a>
+    </div>
+    <div>&copy; 2026 GoldrArt. All rights reserved.</div>
+  </footer>
+
+  <script src="../js/notifications.js"></script>
+  <script src="../js/app.js" defer></script>
+</body>
+</html>

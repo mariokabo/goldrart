@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Admin Inspiration - GoldrArt</title>
+  <link rel="icon" type="image/png" href="../logo.png">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body {background:#181818;color:#fff;}
+    .admin-insp-container {max-width:800px;margin:40px auto;padding:24px;background:#202020;border-radius:16px;box-shadow:0 2px 16px #0004;}
+    .admin-insp-title {font-size:2rem;font-weight:700;color:#e6c97a;margin-bottom:18px;}
+    .admin-insp-form {background:#232323;padding:18px 16px;border-radius:12px;margin-bottom:32px;}
+    .admin-insp-form label {display:block;margin-bottom:6px;font-weight:600;color:#e6c97a;}
+    .admin-insp-form input[type="text"],.admin-insp-form textarea,.admin-insp-form input[type="datetime-local"] {width:100%;padding:8px 10px;margin-bottom:12px;border-radius:8px;border:0;background:#191919;color:#fff;}
+    .admin-insp-form input[type="file"] {margin-bottom:12px;}
+    .admin-insp-form button {background:#b8912b;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-weight:700;cursor:pointer;}
+    .admin-insp-list {margin-top:18px;}
+    .admin-insp-post {background:#232323;border-radius:10px;padding:14px 12px;margin-bottom:18px;box-shadow:0 1px 6px #0002;}
+    .admin-insp-post-title {font-weight:700;color:#e6c97a;font-size:1.1rem;}
+    .admin-insp-post-body {color:#eee;margin:8px 0;}
+    .admin-insp-post-images {display:flex;gap:8px;margin-bottom:8px;}
+    .admin-insp-post-images img {max-width:90px;max-height:90px;border-radius:8px;object-fit:cover;}
+    .admin-insp-post-actions {display:flex;gap:10px;}
+    .admin-insp-post-actions button {background:#444;color:#fff;border:none;border-radius:6px;padding:6px 16px;cursor:pointer;}
+    @media (max-width:600px) {.admin-insp-container{padding:8px;}}
+  </style>
+</head>
+<body>
+  <div class="admin-insp-container">
+    <div class="admin-insp-title">إدارة بوستات الإلهام</div>
+    <form class="admin-insp-form" id="inspForm">
+      <label>عنوان البوست</label>
+      <input type="text" id="inspTitle" required>
+      <label>صور البوست</label>
+      <input type="file" id="inspImages" accept="image/*" multiple>
+      <label>نص/مقالة البوست</label>
+      <textarea id="inspBody" rows="4" required></textarea>
+      <label>تاريخ ووقت النشر</label>
+      <input type="datetime-local" id="inspDate" required>
+      <button type="submit">حفظ البوست</button>
+      <input type="hidden" id="editIdx">
+    </form>
+    <div class="admin-insp-list" id="inspList"></div>
+  </div>
+  <script src="../js/admin_inspiration.js"></script>
+</body>
+</html>

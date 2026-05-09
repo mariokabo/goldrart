@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17864980228"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'AW-17864980228');
+  </script>
+  <meta charset="utf-8"><title>Apply Cleaned Catalog Now</title>
+</head>
+<body style='font-family:Arial,Helvetica,sans-serif;padding:18px;background:#111;color:#eee'>
+  <h2>Apply Cleaned Catalog</h2>
+  <div id='status'>Attempting to fetch <code>products.applied.json</code> and write to localStorage...</div>
+  <div style='margin-top:12px'><button id='doIt'>Run</button> <button id='close'>Close</button></div>
+<script>
+document.getElementById('doIt').addEventListener('click', async ()=>{
+  try{
+    const r = await fetch('products.applied.json'); if(!r.ok) throw new Error('products.applied.json not found');
+    const catalog = await r.json();
+    const backupKey = 'gold_products_backup_'+Date.now();
+    localStorage.setItem(backupKey, localStorage.getItem('gold_products') || JSON.stringify(window.CATALOG || []));
+    localStorage.setItem('gold_products', JSON.stringify(catalog));
+    document.getElementById('status').innerHTML = `Applied catalog (${catalog.length} categories). Backup key: <code>${backupKey}</code>. <a href='index.html'>Open site</a>`;
+  }catch(e){ document.getElementById('status').textContent = 'Error: '+(e.message||e); }
+});
+document.getElementById('close').addEventListener('click',()=> window.close());
+</script>
+</body>
+</html>

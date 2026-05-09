@@ -1,0 +1,17 @@
+{
+  "TWILIO_ACCOUNT_SID": "your_twilio_sid",
+  "TWILIO_AUTH_TOKEN": "your_twilio_auth_token",
+  "TWILIO_WHATSAPP_FROM": "whatsapp:+1415xxxxxxx",
+
+  "TELEGRAM_BOT_TOKEN": "your_telegram_bot_token",
+  "TELEGRAM_CHAT_ID": "your_chat_id",
+
+  "FB_PAGE_ACCESS_TOKEN": "your_fb_page_access_token",
+  "FB_PAGE_ID": "your_fb_page_id",
+
+  "X_CLIENT_ID": "your_x_client_id",
+  "X_CLIENT_SECRET": "your_x_client_secret",
+  "X_REDIRECT_URI": "https://your-site/.netlify/functions/x_oauth_callback",
+
+  "ADMIN_SECRET": "pick_a_strong_secret_to_protect_token_ops"
+}

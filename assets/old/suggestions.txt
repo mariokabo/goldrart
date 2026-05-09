@@ -1,0 +1,22 @@
+20 Suggestions to make Goldrart more professional and higher-converting:
+
+1. Add a lightweight CMS (Netlify CMS / Sanity) to manage products without editing code.
+2. Add high-resolution product galleries with zoom and lightbox.
+3. Implement image lazy-loading and optimized WebP images.
+4. Add client-side filtering (size, price, color) and sorting.
+5. Provide size configurator & preview for custom orders.
+6. Add testimonials and trust badges (secure checkout, warranty).
+7. Offer promo banners and seasonal campaigns with schedules.
+8. Integrate analytics (Google Analytics/GA4) and conversion pixels.
+9. Add multi-language support (EN + AR) with RTL support for Arabic.
+10. Add email capture & newsletter with Mailchimp or similar.
+11. Add structured data (schema.org Product) for rich snippets.
+12. Add server-side form validation and optional order persistence (serverless functions).
+13. Provide multiple WhatsApp quick-actions and prefilled templates per product.
+14. Add accessibility improvements (keyboard nav, ARIA labels, proper color contrast).
+15. Add an admin password-protected area to add/edit/remove listings.
+16. Add advanced security headers via hosting (HSTS, Referrer-Policy, X-Frame-Options).
+17. Offer recommended pairings or 'complete the room' suggestions using AI.
+18. Add shipping calculator and estimated delivery times per region.
+19. Add a wishlist persistence tied to email (export to WhatsApp or email).
+20. Add A/B tests for CTA copy and product card layout to increase conversions.

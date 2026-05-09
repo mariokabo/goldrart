@@ -1,0 +1,22 @@
+20 Tailored UI/UX improvements for Goldrart
+
+1. Add a dedicated product detail page/modal with large gallery, zoom, and framed preview.
+2. Surface size/price variants clearly with radio buttons and live price updates.
+3. Use a responsive masonry grid for product listings to showcase tall/landscape artworks.
+4. Add subtle entrance animations for cards (fade + slight upward motion) to increase perceived polish.
+5. Improve contrast for readability: darker cards, slightly brighter gold (`#b68b2a`) and white text for descriptions.
+6. Add a persistent bottom quick-action bar on mobile with Cart/WhatsApp/Call buttons.
+7. Provide a visual room preview feature (upload room photo and place the painting scaled to chosen size).
+8. Save wishlist to localStorage and allow sharing wishlist via WhatsApp/email.
+9. Add rating/testimonial snippets on product cards for social proof.
+10. Display estimated delivery/shipping cost per product and checkout-level shipping calculator.
+11. Add low-resolution LQIP placeholders and lazy-loading for all images to improve perceived speed.
+12. Provide undo toast when removing items from cart to prevent accidental deletes.
+13. Add keyboard navigation and accessible labels (ARIA) for the drawer and modals.
+14. Add a “Compare sizes” helper that shows the same artwork at different sizes side-by-side.
+15. Add microcopy hints (e.g., recommended sizes for wall dimensions) to reduce buyer uncertainty.
+16. Add color-themed filters and AI-based suggested pairings to help customers build sets.
+17. Add a conversion-focused sticky CTA for limited offers with countdown timers.
+18. Provide visible seller guarantees (secure payment, return policy) in the checkout flow.
+19. Add analytics events for product clicks, add-to-cart, and checkout start to optimize funnels.
+20. Add a simple onboarding tour for first-time visitors explaining how to select sizes and order.

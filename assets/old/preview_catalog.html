@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17864980228"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'AW-17864980228');
+  </script>
+  <meta charset="utf-8">
+  <title>Products Preview</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;padding:18px;background:#0b0b0b;color:#eee}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+    .card{background:#111;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.03)}
+    .title{font-weight:700;color:#f3d36a;margin-bottom:6px}
+    .variant{font-size:13px;color:#ddd;margin-bottom:4px}
+    img{width:100%;height:140px;object-fit:cover;border-radius:6px;margin-bottom:8px;background:#222}
+  </style>
+</head>
+<body>
+  <h2>Preview: Applied Catalog (from products.applied.json)</h2>
+  <div id="root">Loading…</div>
+<script>
+async function render(){
+  try{
+    const res = await fetch('products.applied.json'); if(!res.ok) throw new Error('preview not generated');
+    const cat = await res.json();
+    const root = document.getElementById('root');
+    cat.forEach(c=>{
+      const h = document.createElement('h3'); h.textContent = c.category; root.appendChild(h);
+      const g = document.createElement('div'); g.className='grid';
+      c.items.forEach(it=>{
+        const d = document.createElement('div'); d.className='card';
+        d.innerHTML = `<div class='title'>${it.title}</div>` + (it.img?`<img src='${it.img}' alt=''>`:'') + `<div>${it.variants.map(v=>`<div class='variant'><strong>${v.size}</strong> &mdash; ${v.price} EGP</div>`).join('')}</div>`;
+        g.appendChild(d);
+      });
+      root.appendChild(g);
+    });
+  }catch(e){ document.getElementById('root').textContent = 'Preview not available: '+ e.message; }
+}
+render();
+</script>
+</body>
+</html>

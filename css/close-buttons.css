@@ -1,0 +1,28 @@
+/* Styles for improved "Close" buttons (gold outlined, transparent/hollow) */
+.btn-close-custom{
+  background: transparent;
+  color: var(--accent, #d4af37);
+  border: 2px solid var(--accent, #d4af37);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 180ms ease;
+  min-height: 36px;
+  line-height: 1;
+}
+.btn-close-custom:hover{
+  background: var(--accent, #d4af37);
+  color: #000;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.28);
+}
+.btn-close-custom:focus{
+  outline: 3px solid rgba(212,175,55,0.18);
+  outline-offset: 3px;
+}
+.btn-close-custom.small{padding:6px 10px;font-size:14px}

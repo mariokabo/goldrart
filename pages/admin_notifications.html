@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الإشعارات - GoldrArt-Maro</title>
+    <link rel="stylesheet" href="../css/notifications.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        input[type="text"],
+        textarea,
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #fda085;
+            box-shadow: 0 0 0 3px rgba(253, 160, 133, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .duration-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(253, 160, 133, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(253, 160, 133, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+            font-weight: 600;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #764ba2;
+            transform: translateX(-5px);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-right: 4px solid #f39c12;
+        }
+
+        .info-box p {
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .preview-btn {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+            margin-top: 10px;
+        }
+
+        .preview-btn:hover {
+            box-shadow: 0 6px 20px rgba(168, 237, 234, 0.6);
+        }
+
+        /* حالة الاتصال مع Google Sheets */
+        .conn-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 10px 0 20px 0;
+        }
+
+        .status-badge {
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            border: 2px solid #d4af37;
+            background: #1a1510;
+            color: #d4af37;
+        }
+
+        .status-badge.connected { border-color: #4caf50; color: #90ee90; background: #0f1d0f; }
+        .status-badge.disconnected { border-color: #f44336; color: #ff9999; background: #1f0e0e; }
+        .status-badge.pending { border-color: #ff9800; color: #ffc570; background: #231a0f; }
+
+        .test-conn-btn { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333; }
+
+        /* 📊 شاشة Log/Console */
+        .log-console {
+            margin-top: 30px;
+            background: #0a0a0a;
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #1a1510 0%, #2d2416 100%);
+            border-bottom: 1px solid #d4af37;
+        }
+
+        .log-header h3 {
+            margin: 0;
+            color: #d4af37;
+            font-size: 1.1rem;
+        }
+
+        .clear-log-btn {
+            background: #8b0000;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .clear-log-btn:hover {
+            background: #b30000;
+            transform: scale(1.05);
+        }
+
+        .log-content {
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            direction: rtl;
+        }
+
+        .log-entry {
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            border-right: 4px solid;
+            animation: slideInLog 0.3s ease;
+        }
+
+        @keyframes slideInLog {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .log-entry.info {
+            background: #1a2332;
+            border-color: #4a90e2;
+            color: #a0c4ff;
+        }
+
+        .log-entry.success {
+            background: #1a331a;
+            border-color: #4caf50;
+            color: #90ee90;
+        }
+
+        .log-entry.warning {
+            background: #332a1a;
+            border-color: #ff9800;
+            color: #ffc570;
+        }
+
+        .log-entry.error {
+            background: #331a1a;
+            border-color: #f44336;
+            color: #ff9999;
+        }
+
+        .log-entry .timestamp {
+            color: #888;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+
+        .log-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .log-content::-webkit-scrollbar-track {
+            background: #1a1510;
+        }
+
+        .log-content::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 4px;
+        }
+
+        .log-content::-webkit-scrollbar-thumb:hover {
+            background: #b68b2a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="back-link">← العودة للصفحة الرئيسية</a>
+        
+        <h1><img class="inline-icon" src="../assets/icons/png/bell.png" alt="Notifications">إدارة الإشعارات</h1> 
+
+        <div class="conn-status">
+            <span id="sheetsStatus" class="status-badge pending">الحالة: غير معروف</span>
+            <button type="button" class="btn test-conn-btn" onclick="testSheetsConnection()">⚙️ اختبار الاتصال بـ Google Sheets</button>
+        </div>
+
+        <div class="info-box">
+            <p>📌 سيتم عرض الإشعار لجميع زوار الموقع بشكل فوري بتصميم ذهبي فاخر متناسق مع الموقع!</p>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            تم إرسال الإشعار بنجاح
+        </div>
+
+        <form id="notificationForm">
+            <div class="form-group">
+                <label for="title">عنوان الإشعار</label>
+                <input type="text" id="title" name="title" placeholder="مثال: عرض خاص!" required>
+            </div>
+
+            <div class="form-group">
+                <label for="message">نص الإشعار</label>
+                <textarea id="message" name="message" placeholder="مثال: خصم 50% على جميع المنتجات لمدة محدودة!" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="type">نوع الإشعار</label>
+                <select id="type" name="type">
+                    <option value="success">نجاح (ذهبي-أخضر مضيء)</option>
+                    <option value="info" selected>معلومات (ذهبي فاخر)</option>
+                    <option value="warning">تحذير (ذهبي فاتح)</option>
+                    <option value="error">خطأ (ذهبي-أحمر)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="link">رابط (اختياري)</label>
+                <input type="text" id="link" name="link" placeholder="مثال: pages/inspiration.html">
+            </div>
+
+            <div class="form-group">
+                <label>🌟 زر مميز (اختياري - يظهر بدلاً من الرابط العادي)</label>
+                <div class="duration-group">
+                    <div>
+                        <label for="buttonText">نص الزر</label>
+                        <input type="text" id="buttonText" name="buttonText" placeholder="مثال: تسوق الآن">
+                    </div>
+                    <div>
+                        <label for="buttonLink">رابط الزر</label>
+                        <input type="text" id="buttonLink" name="buttonLink" placeholder="مثال: pages/inspiration.html">
+                    </div>
+                </div>
+                <small style="color: #666; display: block; margin-top: 5px;"><img class="inline-icon" src="../assets/icons/png/info.png" alt="Info">إذا أضفت نص وزر، سيظهر زر أبيض مميز بدلاً من الرابط العادي</small> 
+            </div>
+
+            <div class="form-group">
+                <label>مدة ظهور الإشعار</label>
+                <div class="duration-group">
+                    <div>
+                        <label for="duration">المدة (بالثواني)</label>
+                        <input type="number" id="duration" name="duration" value="8" min="1" max="60">
+                    </div>
+                    <div>
+                        <label for="persistent">ثابت (لا يختفي تلقائياً)</label>
+                        <select id="persistent" name="persistent">
+                            <option value="false" selected>لا</option>
+                            <option value="true">نعم</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><img class="inline-icon" src="../assets/icons/png/warning.png" alt="Timer">انتهاء الإشعار (اختياري)</label>
+                <div class="duration-group">
+                    <div>
+                        <label for="expiresIn">ينتهي بعد (بالساعات)</label>
+                        <input type="number" id="expiresIn" name="expiresIn" placeholder="24" min="1">
+                        <small style="color: #666;">اتركه فارغاً للعرض الدائم</small>
+                    </div>
+                    <div>
+                        <label for="showOnce">يظهر مرة واحدة فقط</label>
+                        <select id="showOnce" name="showOnce">
+                            <option value="false" selected>لا</option>
+                            <option value="true">نعم</option>
+                        </select>
+                        <small style="color: #666;">لن يظهر للمستخدم مرة أخرى</small>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="btn preview-btn" onclick="previewNotification()"><img class="inline-icon" src="../assets/icons/png/preview.png" alt="Preview">معاينة الإشعار</button> 
+            <button type="submit" class="btn"><img class="inline-icon" src="../assets/icons/png/send.png" alt="Send">إرسال الإشعار لجميع المستخدمين</button> 
+        </form>
+
+        <!-- شاشة Log/Console -->
+        <div class="log-console" id="logConsole">
+            <div class="log-header">
+                <h3><img class="inline-icon" src="../assets/icons/png/info.png" alt="Log">سجل العمليات (Log)</h3>
+                <button class="clear-log-btn" onclick="clearLog()"><img class="inline-icon" src="../assets/icons/png/delete.png" alt="Clear">مسح</button> 
+            </div>
+            <div class="log-content" id="logContent">
+                <div class="log-entry info">⏳ في انتظار إرسال الإشعار...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // إعداد رابط Google Sheets كقيمة مركزية
+        const SHEETS_API_URL = 'https://script.google.com/macros/s/AKfycbworYWs9sAjceE5kkDCeS1kXKrBIJuVpojQn_GnAE0Uiv_-w4Mlp6M60urpfknct5UH/exec';
+
+        function setSheetsStatus(state, msg){
+            const el = document.getElementById('sheetsStatus');
+            el.classList.remove('connected','disconnected','pending');
+            el.classList.add(state);
+            el.textContent = `الحالة: ${msg}`;
+        }
+
+        // 📊 دوال شاشة Log
+        function addLog(message, type = 'info') {
+            const logContent = document.getElementById('logContent');
+            const timestamp = new Date().toLocaleTimeString('ar-EG');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.innerHTML = `${message} <span class="timestamp">[${timestamp}]</span>`;
+            logContent.appendChild(logEntry);
+            logContent.scrollTop = logContent.scrollHeight;
+        }
+
+        function clearLog() {
+            const logContent = document.getElementById('logContent');
+            logContent.innerHTML = '<div class="log-entry info">⏳ في انتظار إرسال الإشعار...</div>';
+        }
+
+        // معاينة الإشعار
+        function previewNotification() {
+            const title = document.getElementById('title').value;
+            const message = document.getElementById('message').value;
+            const type = document.getElementById('type').value;
+            const link = document.getElementById('link').value;
+            const buttonText = document.getElementById('buttonText').value;
+            const buttonLink = document.getElementById('buttonLink').value;
+
+            if (!title || !message) {
+                alert('الرجاء ملء العنوان والرسالة!');
+                return;
+            }
+
+            // فتح نافذة جديدة للمعاينة
+            const previewWindow = window.open('', 'preview', 'width=400,height=300');
+            previewWindow.document.write(`
+                <!DOCTYPE html>
+                <html lang="ar" dir="rtl">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>معاينة الإشعار</title>
+                    <link rel="stylesheet" href="../css/notifications.css">
+                </head>
+                <body style="padding: 20px; background: #f5f5f5;">
+                    <div id="notificationContainer"></div>
+                    <script src="../js/notifications.js"><\/script>
+                    <script>
+                        setTimeout(() => {
+                            showNotification('${title}', '${message}', '${type}', '${link}', 8000, false, '${buttonText}', '${buttonLink}');
+                        }, 500);
+                    <\/script>
+                </body>
+                </html>
+            `);
+        }
+
+        // إرسال الإشعار
+        document.getElementById('notificationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            addLog('بدء عملية إرسال الإشعار...', 'info');
+
+            const expiresIn = document.getElementById('expiresIn').value;
+            let expiresAt = null;
+            
+            if (expiresIn && expiresIn > 0) {
+                const now = new Date();
+                now.setHours(now.getHours() + parseInt(expiresIn));
+                expiresAt = now.toISOString();
+                addLog(`تم تعيين انتهاء الصلاحية: ${expiresIn} ساعة`, 'info');
+            }
+
+            const notification = {
+                id: Date.now() + Math.random().toString(36).substr(2, 9),
+                title: document.getElementById('title').value,
+                message: document.getElementById('message').value,
+                type: document.getElementById('type').value,
+                link: document.getElementById('link').value,
+                buttonText: document.getElementById('buttonText').value,
+                buttonLink: document.getElementById('buttonLink').value,
+                duration: parseInt(document.getElementById('duration').value) * 1000,
+                persistent: document.getElementById('persistent').value === 'true',
+                expiresAt: expiresAt,
+                showOnce: document.getElementById('showOnce').value === 'true',
+                active: true,
+                createdAt: new Date().toISOString()
+            };
+
+            addLog(`📝 تم إنشاء الإشعار: "${notification.title}"`, 'info');
+
+            try {
+                addLog('جاري الاتصال بـ Google Sheets...', 'info');
+                
+                // 🔥 حفظ في Google Sheets (إزالة mode: 'no-cors' لقراءة الرد)
+                const response = await fetch(SHEETS_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8'
+                    },
+                    body: JSON.stringify(notification),
+                    redirect: 'follow'
+                });
+
+                addLog('تم الاتصال بـ Google Sheets بنجاح', 'success');
+
+                // قراءة الرد
+                const result = await response.text();
+                addLog(`استجابة السيرفر: ${result.substring(0, 100)}...`, 'info');
+
+                let parsedResult;
+                try {
+                    parsedResult = JSON.parse(result);
+                    if (parsedResult.success) {
+                        addLog('تم حفظ الإشعار في Google Sheets بنجاح', 'success');
+                    } else {
+                        addLog(`رد غير متوقع: ${parsedResult.message || 'لا توجد رسالة'}`, 'warning');
+                    }
+                } catch (parseErr) {
+                    addLog('الرد ليس JSON، لكن تم الإرسال', 'warning');
+                }
+
+                addLog('🌍 الإشعار متاح الآن لجميع الزوار!', 'success');
+
+                // عرض رسالة النجاح
+                const successMsg = document.getElementById('successMessage');
+                successMsg.textContent = 'تم إرسال الإشعار لجميع الزوار عبر Google Sheets';
+                successMsg.style.display = 'block';
+
+                // عرض الإشعار فعلياً على الصفحة للمعاينة
+                if (typeof showNotification === 'function') {
+                    addLog('🎨 عرض معاينة الإشعار...', 'info');
+                    showNotification(
+                        notification.title,
+                        notification.message,
+                        notification.type,
+                        notification.link,
+                        notification.persistent ? 0 : notification.duration,
+                        notification.persistent,
+                        notification.buttonText,
+                        notification.buttonLink
+                    );
+                }
+
+                // إعادة تعيين النموذج
+                this.reset();
+                addLog('🔄 تم إعادة تعيين النموذج', 'info');
+
+                // إخفاء رسالة النجاح بعد 5 ثواني
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 5000);
+
+            } catch (error) {
+                addLog(`خطأ في الإرسال: ${error.message}`, 'error');
+                addLog(`التفاصيل: ${error.stack}`, 'error');
+                console.error('خطأ في الإرسال:', error);
+                alert('حدث خطأ أثناء إرسال الإشعار إلى Google Sheets. راجع شاشة Log للتفاصيل.');
+                setSheetsStatus('disconnected', 'فشل الإرسال');
+            }
+        });
+
+        // زر اختبار الاتصال بـ Google Sheets
+        async function testSheetsConnection(){
+            addLog('اختبار الاتصال بـ Google Sheets (GET)...', 'info');
+            setSheetsStatus('pending', 'جارٍ الاختبار');
+            try{
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+                const res = await fetch(SHEETS_API_URL, { method: 'GET', signal: controller.signal });
+                clearTimeout(timeoutId);
+                const text = await res.text();
+                addLog(`رد GET: ${text.substring(0,120)}...`, 'info');
+                try{
+                    const json = JSON.parse(text);
+                    if(json && (json.notification !== undefined)){
+                        addLog('الاتصال ناجح واستقبال JSON صحيح', 'success');
+                        setSheetsStatus('connected', 'متصل');
+                    }else{
+                        addLog('رد GET ليس بالشكل المتوقع', 'warning');
+                        setSheetsStatus('connected', 'متصل (رد غير متوقع)');
+                    }
+                }catch(parseErr){
+                    addLog('الرد ليس JSON (قد يكون تحويل/HTML)، لكن الاتصال تم', 'warning');
+                    setSheetsStatus('connected', 'متصل (غير JSON)');
+                }
+            }catch(err){
+                addLog(`فشل الاتصال: ${err.message}`, 'error');
+                setSheetsStatus('disconnected', 'غير متصل');
+            }
+        }
+    </script>
+    <script src="../js/notifications.js"></script>
+</body>
+</html>
