@@ -74,7 +74,7 @@ src="https://www.facebook.com/tr?id=1972456873668976&ev=PageView&noscript=1"
   {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "GoldrArt <img src=\"assets/icons/png/GoldrArt-Verify.png\" alt=\"Verified\" style=\"width:14px;height:14px;vertical-align:middle;margin:0 2px 0 2px;\">",
+    "name": "GoldrArt",
     "url": "https://goldrart.com",
     "logo": "https://goldrart.com/logo.png",
     "description": "Premium fine art paintings gallery",
@@ -89,6 +89,8 @@ src="https://www.facebook.com/tr?id=1972456873668976&ev=PageView&noscript=1"
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/notifications.css">
   <link rel="stylesheet" href="css/close-buttons.css">
+  <!-- Swiper for smooth horizontal product scrolling with 3D effects and momentum -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <link rel="preload" href="assets/old/Dreaming%20Holiday.otf" as="font" type="font/otf" crossorigin> <!-- preload DreamingHoliday to reduce FOIT -->
   <!-- Ramadan button styles moved to css/style.css; font-face already declared there -->
 </head>
@@ -123,11 +125,11 @@ src="https://www.facebook.com/tr?id=1972456873668976&ev=PageView&noscript=1"
 
   <div id="sideDrawer" class="drawer hidden" aria-hidden="true">
     <div class="drawer-top">
-      <button id="drawerClose" class="drawer-close" aria-label="Close menu">✕</button>
+      <button id="drawerClose" class="drawer-close" aria-label="Close menu"><img src="assets/svg/close.svg" alt="" aria-hidden="true" style="width:18px;height:18px;display:block;object-fit:contain"></button>
     </div>
 
   <!-- Back to top floating button -->
-  <button id="backToTop" class="back-top" aria-label="Go to top">▲</button>
+  <button id="backToTop" class="back-top" aria-label="Go to top"><img src="assets/svg/arrow-up.svg" alt="" aria-hidden="true" style="width:18px;height:18px;display:block;object-fit:contain"></button>
     <nav class="drawer-nav" role="navigation" aria-label="Site navigation">
       <a class="nav-item" href="/">Home</a>
       <div id="dynamicCategories"></div>
@@ -136,7 +138,7 @@ src="https://www.facebook.com/tr?id=1972456873668976&ev=PageView&noscript=1"
       <a class="nav-item" href="pages/service-policy.html">Service &amp; Policy</a>
     </nav>
     <div class="drawer-footer" style="padding:12px;display:flex;flex-direction:column;gap:8px;align-items:center">
-      <a id="waQuick" href="https://wa.me/201004135874?text=مرحبا%20GoldrArt%20👋%0A%0Aاريد تصميم مخصص%20من خلال موقعكم%20هل%20هناك%20احد%20لمساعدتي%20في%20تصميم%20لوحتي%20الفنية؟%2C%20كيف%20يمكنكم%20مساعدتي؟" target="_blank" rel="noopener noreferrer" class="wa-btn" style="width:95%;display:inline-block;text-decoration:none;text-align:center;line-height:44px;border-radius:10px;background:linear-gradient(120deg,#f7dfb3,#d4af37);color:#000;font-weight:900;box-shadow:0 10px 30px rgba(0,0,0,0.35)">Contact on WhatsApp</a>
+      <a id="waQuick" href="https://wa.me/201004135874?text=مرحبا%20GoldrArt%0A%0Aاريد%20تصميم%20مخصص%20من%20خلال%20موقعكم%20هل%20هناك%20احد%20لمساعدتي%20في%20تصميم%20لوحتي%20الفنية؟%2C%20كيف%20يمكنكم%20مساعدتي؟" target="_blank" rel="noopener noreferrer" class="wa-btn" style="width:95%;display:inline-block;text-decoration:none;text-align:center;line-height:44px;border-radius:10px;background:linear-gradient(120deg,#f7dfb3,#d4af37);color:#000;font-weight:900;box-shadow:0 10px 30px rgba(0,0,0,0.35)">Contact on WhatsApp</a>
       <img src="logo.png" alt="GoldrArt" class="drawer-brand" style="width:92px;margin-top:6px;opacity:0.9">
     </div>
   </div>
@@ -357,7 +359,7 @@ src="https://www.facebook.com/tr?id=1972456873668976&ev=PageView&noscript=1"
   </div>
 
   <!-- Floating WhatsApp quick button (WhatsApp-styled) -->
-  <a id="waFloat" href="https://wa.me/201004135874?text=مرحبا%20GoldrArt%20👋%0A%0Aاسمي%20يهمنيني%20للتواطبات%20الفنية%2C%20كيف%20يمكنكم%20مساعدتي؟" target="_blank" rel="noopener noreferrer" class="wa-float" title="Contact us on WhatsApp" aria-label="WhatsApp contact" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center">
+  <a id="waFloat" href="https://wa.me/201004135874?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%20%D8%A8%D9%83%D9%85%20%D9%81%D8%B1%D9%8A%D9%82%20GoldrArt%20%0A%20%D8%A7%D8%B1%D9%8A%D8%AF%20%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%D8%A9%20%D9%85%D9%86%20%D9%83%D9%85%20%D9%81%D9%8A%20%D8%A7%D9%84%D9%85%D9%88%D9%82%D8%B9%20%D8%A7%D9%84%D8%A7%D9%83%D8%AA%D8%B1%D9%88%D9%86%D9%8A" target="_blank" rel="noopener noreferrer" class="wa-float" title="Contact us on WhatsApp" aria-label="WhatsApp contact" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center">
     <img src="assets/icons/png/whatsapp.png" alt="WhatsApp" width="60" height="60" />
   </a>
 
@@ -383,7 +385,7 @@ src="https://www.facebook.com/tr?id=1972456873668976&ev=PageView&noscript=1"
         <div id="pm_desc" style="color:#ddd;margin-bottom:8px"></div>
         <div id="pm_variants"></div>
         <div style="margin-top:12px">
-          <button id="pm_add" class="btn">Own This Piece</button>
+          <button id="pm_add" class="btn uiverse-btn" data-label="Own This Piece">Own This Piece</button>
           <button id="pm_close" style="margin-left:8px">Close</button>
         </div>
       </div>
@@ -424,7 +426,7 @@ src="https://www.facebook.com/tr?id=1972456873668976&ev=PageView&noscript=1"
           <option>Instapay Transfer</option>
         </select>
         <div class="form-actions">
-          <a id="sendOrder" href="https://wa.me/201004135874?text=مرحبا%20GoldrArt%20👋%0A%0Aاريد%20اطلب%20لوحة%20فنية%20من%20موقعكم%2C%20كيف%20يمكنكم%20مساعدتي؟" target="_blank" rel="noopener noreferrer" class="gold" style="display:inline-block;text-decoration:none;text-align:center;padding:10px 16px;border-radius:10px;background:linear-gradient(90deg,var(--gold),#ffd86a);color:#000;font-weight:900;box-shadow:0 10px 36px rgba(182,139,42,0.16);border:1px solid rgba(0,0,0,0.12)">Send Order via WhatsApp</a>
+          <a id="sendOrder" href="https://wa.me/201004135874?text=مرحبا%20GoldrArt%0A%0Aاريد%20اطلب%20لوحة%20فنية%20من%20موقعكم%2C%20كيف%20يمكنكم%20مساعدتي؟" target="_blank" rel="noopener noreferrer" class="gold" style="display:inline-block;text-decoration:none;text-align:center;padding:10px 16px;border-radius:10px;background:linear-gradient(90deg,var(--gold),#ffd86a);color:#000;font-weight:900;box-shadow:0 10px 36px rgba(182,139,42,0.16);border:1px solid rgba(0,0,0,0.12)">Send Order via WhatsApp</a>
           <button id="cancelCheckout" type="button" style="background:#111;border:2px solid #d4af37;color:#d4af37;font-weight:900;border-radius:10px;padding:10px 16px;">Cancel</button>
         </div>
       </form>
@@ -445,12 +447,14 @@ src="https://www.facebook.com/tr?id=1972456873668976&ev=PageView&noscript=1"
 
   <script src="js/products.builtin.js"></script>
   <script src="js/notifications.js"></script>
+  <!-- Swiper JS for horizontal product swiping with momentum and 3D effects -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
   <script src="js/app.js" defer></script>
   <script src="js/features.js" defer></script>
   <script src="js/close-buttons.js"></script>
   <script src="js/meta-events.js"></script>
   <script>
-    // 📋 رابط Google Apps Script - استبدله برابطك من الإعداد
+    // Google Apps Script link - replace with your deployed URL
     // اتبع: CHECKOUT_SETUP_SIMPLE.md - الخطوة 7
     const CHECKOUT_SHEET_URL = 'https://script.google.com/macros/s/AKfycbyrCBGuVa8RroxIVqBqesPKhukzpxZWMLLtbEa6GI60NSLUrolcFWfdmRwOzi9aMf6TZA/exec'; // ستملأ هذا من خطوة Deploy
     
@@ -529,9 +533,9 @@ src="https://www.facebook.com/tr?id=1972456873668976&ev=PageView&noscript=1"
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(payload)
             });
-            console.log('✅ Order submitted to database');
+            console.log('[OK] Order submitted to database');
           } else {
-            console.warn('⚠️ Google Sheet URL not configured, saving locally only');
+            console.warn('[WARN] Google Sheet URL not configured, saving locally only');
             // Save to localStorage as backup
             let orders = JSON.parse(localStorage.getItem('gold_orders') || '[]');
             orders.push({...payload, timestamp: new Date().toISOString()});

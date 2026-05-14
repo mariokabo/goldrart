@@ -61,6 +61,19 @@ function openExternalLink(url, fallbackMode = false) {
   }
 }
 
+// Unified category navigation used by sidebar links and section titles
+function openCategoryView(categoryName) {
+  if (!categoryName) return;
+  const s = new URLSearchParams(window.location.search);
+  s.set('category', categoryName);
+  s.delete('page');
+  history.pushState({}, '', '?' + s.toString());
+  window._gold_urlCategory = categoryName;
+  renderCatalog();
+  try { closeDrawer(); } catch (e) {}
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 // Open WhatsApp chat with message via wa.me URL scheme
 function openWhatsAppChat(message, phoneNumber = null) {
   if (!message) return;
@@ -214,7 +227,7 @@ function parseCSV(text){
   // Remove completely empty rows and trim all fields
   const cleanedRows = rows.filter(r => r && r.length > 0 && r.some(cell => cell && cell.trim())).map(r => r.map(cell => (cell||'').toString().trim()));
   
-  console.log('[CSV CLEANUP] Original rows:', rows.length, '→ Cleaned rows:', cleanedRows.length, '(removed', rows.length - cleanedRows.length, 'empty rows)');
+  console.log('[CSV CLEANUP] Original rows:', rows.length, 'to Cleaned rows:', cleanedRows.length, '(removed', rows.length - cleanedRows.length, 'empty rows)');
   
   return cleanedRows;
 }
@@ -263,7 +276,7 @@ async function loadCatalogFromCSV() {
           const idx_id = findIndex([csvMap.id,'id']); const idx_title = findIndex([csvMap.title,'title','name']); const idx_desc = findIndex([csvMap.description,'description','desc','details']);
           // استخدام العمود E (index 4) مباشرة للصور
           let idx_img = 4;
-          console.log('[IMAGE] ✅ Using column E (index 4) for product images');
+          console.log('[IMAGE] Using column E (index 4) for product images');
           const idx_price = findIndex([csvMap.price,'price']);
           const idx_cat = findIndex([csvMap.category,'category']);
           const idx_sp = findIndex([
@@ -352,15 +365,15 @@ async function loadCatalogFromCSV() {
           // 🔍 DIAGNOSTIC: Log total product count
           const totalProducts = CATALOG.reduce((sum, cat) => sum + (cat.items ? cat.items.length : 0), 0);
           const expectedRows = rows.length - 1; // minus header
-          console.log('[SUCCESS] ✅ Loaded', totalProducts, 'products from Google Sheets into', CATALOG.length, 'categories');
+          console.log('[SUCCESS] Loaded', totalProducts, 'products from Google Sheets into', CATALOG.length, 'categories');
           console.log('[ROWS INFO] CSV had', rows.length, 'total rows (1 header +', expectedRows, 'data)');
           console.log('[PROCESSED] Actually processed:', processedCount, 'non-empty data rows');
           console.log('[CATEGORIES]', CATALOG.map(c => `${c.category}(${c.items.length})`).join(' | '));
           if(totalProducts === 0) {
-            console.warn('[ERROR] ⚠️ No products loaded! Check Sheet columns: id, title, image_url, sizes_prices');
+            console.warn('[ERROR] No products loaded! Check Sheet columns: id, title, image_url, sizes_prices');
             console.warn('[COLUMNS] Header:', header.join(' | '));
           } else if(totalProducts < processedCount) {
-            console.warn('[WARNING] ⚠️ Only', totalProducts, 'of', processedCount, 'rows were fully processed.');
+            console.warn('[WARNING] Only', totalProducts, 'of', processedCount, 'rows were fully processed.');
           } else if(processedCount < expectedRows) {
             console.warn('[INFO] ℹ️ Skipped', expectedRows - processedCount, 'empty/malformed rows');
           }
@@ -374,7 +387,7 @@ async function loadCatalogFromCSV() {
           }catch(e){ console.warn('catalog backup/notify failed', e); localStorage.setItem('gold_products', JSON.stringify(CATALOG)); }
           // if the sheet provided featured slides, persist them and refresh carousel
           try{
-            if(parsedFeatured && parsedFeatured.length>0){ saveFeatured(parsedFeatured); renderCarousel(); }
+            if(parsedFeatured && parsedFeatured.length>0){ saveFeatured(parsedFeatured); renderCarousel3D(); }
             if(parsedBg){
               console.log('[BG] Applying background from sheet:', parsedBg);
               try{
@@ -693,6 +706,44 @@ function snapshotItem(it){
 function $(id){return document.getElementById(id)}
 function el(tag,cls){const e=document.createElement(tag); if(cls) e.className=cls; return e}
 
+function getAssetSvgPath(name){
+  return (window.location.pathname.includes('/pages/') ? '../' : './') + 'assets/svg/' + name + '.svg';
+}
+
+function svgIcon(name, alt=''){
+  const label = alt ? ` alt="${alt}"` : ' alt="" aria-hidden="true"';
+  return `<img class="inline-icon" src="${getAssetSvgPath(name)}"${label} style="width:18px;height:18px;display:inline-block;vertical-align:-3px;object-fit:contain" />`;
+}
+
+function escapeHtml(text){
+  return String(text == null ? '' : text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function replaceEmojiGlyphs(text){
+  let out = String(text == null ? '' : text);
+  const replacements = [
+    [/⚠️|⚠/g, svgIcon('danger', 'Warning')],
+    [/✅/g, svgIcon('check', 'Success')],
+    [/❌/g, svgIcon('close', 'Error')],
+    [/🎉/g, svgIcon('crown', 'Celebration')],
+    [/📱/g, svgIcon('bell', 'Notification')],
+    [/📋/g, svgIcon('clipboard', 'Clipboard')],
+    [/👋/g, svgIcon('bell', 'Wave')],
+    [/♥|❤/g, svgIcon('heart', 'Favorite')],
+    [/▲/g, svgIcon('arrow-up', 'Up')],
+    [/✕/g, svgIcon('close', 'Close')],
+    [/✦/g, svgIcon('stark', 'Star')],
+    [/→/g, svgIcon('arrow-right', 'Arrow')]
+  ];
+  for (const [pattern, replacement] of replacements) out = out.replace(pattern, replacement);
+  return out;
+}
+
 function getIconPath(){
   return (window.location.pathname.includes('/pages/') ? '../' : './') + 'assets/icons/png/';
 }
@@ -716,7 +767,7 @@ function buildVariantLineHtml(variant, frameText, isSelected) {
   const iconPath = getIconPath();
   const safeSize = (variant && variant.size) ? variant.size : '';
   const safePrice = (variant && variant.price !== undefined && variant.price !== null && variant.price !== '') ? variant.price : '—';
-  const framePart = frameText ? ` <img src='${iconPath}right-arrow.png' alt='→' style='width:16px;height:16px;vertical-align:middle;margin:0 4px;display:inline-block;opacity:0.6;' /><span style="color:#aaa;">${frameText}</span>` : '';
+  const framePart = frameText ? ` <img src='${iconPath}right-arrow.png' alt='to' style='width:16px;height:16px;vertical-align:middle;margin:0 4px;display:inline-block;opacity:0.6;' /><span style="color:#aaa;">${frameText}</span>` : '';
   let selectedHtml = '';
   if (isSelected) {
     selectedHtml = ` <span style="color:var(--gold);font-weight:900;margin-left:6px;display:inline-flex;align-items:center;gap:2px;">Selected <img src='${iconPath}check.png' alt='Selected' style='width:18px;height:18px;vertical-align:middle;display:inline-block;margin-left:2px;' /></span>`;
@@ -933,7 +984,7 @@ async function renderCatalog(){
     } }catch(e){}
     price.innerHTML = priceStr; card.appendChild(price);
     const variantState = createVariantPopupUI(card, it);
-    const actions = el('div','card-actions stacked'); actions.style.marginTop='8px'; const add = el('button','btn add-to-cart'); add.setAttribute('type','button'); add.dataset.id = it.id; add.title = 'Own this piece'; add.textContent='Own This Piece'; add.addEventListener('click',(ev)=>{ ev.stopPropagation(); try{ add.dataset.handled='1'; }catch(e){} const chosen = (variantState && variantState.chosen) ? variantState.chosen : getDefaultVariant(it); addToCart(Object.assign({},it,{chosen, qty:1})); setTimeout(()=>{ try{ delete add.dataset.handled }catch(e){} },400); }); const row1 = el('div'); row1.className = 'row'; row1.appendChild(add); actions.appendChild(row1); card.appendChild(actions); grid.appendChild(card); });
+    const actions = el('div','card-actions stacked'); actions.style.marginTop='8px'; const add = el('button','btn add-to-cart uiverse-btn'); add.setAttribute('type','button'); add.dataset.id = it.id; add.dataset.label = 'Own This Piece'; add.title = 'Own this piece'; add.textContent='Own This Piece'; add.addEventListener('click',(ev)=>{ ev.stopPropagation(); try{ add.dataset.handled='1'; }catch(e){} const chosen = (variantState && variantState.chosen) ? variantState.chosen : getDefaultVariant(it); addToCart(Object.assign({},it,{chosen, qty:1})); setTimeout(()=>{ try{ delete add.dataset.handled }catch(e){} },400); }); const row1 = el('div'); row1.className = 'row'; row1.appendChild(add); actions.appendChild(row1); card.appendChild(actions); grid.appendChild(card); });
     block.appendChild(grid); container.appendChild(block);
     return; }
 
@@ -946,17 +997,29 @@ async function renderCatalog(){
     // header with Browse All and row nav
     const header = el('div'); header.className = 'category-header'; 
     const h = el('h3'); h.className = 'category-title-shiny'; h.textContent = cat.category; header.appendChild(h);
+    if(!catFilter){
+      h.setAttribute('role','button');
+      h.setAttribute('tabindex','0');
+      h.setAttribute('title', `Open ${cat.category}`);
+      h.addEventListener('click', ()=> openCategoryView(cat.category));
+      h.addEventListener('keydown', (ev)=>{
+        if(ev.key === 'Enter' || ev.key === ' '){
+          ev.preventDefault();
+          openCategoryView(cat.category);
+        }
+      });
+    }
     const rightWrap = el('div'); rightWrap.style.display='flex'; rightWrap.style.gap='8px';
     
     // If we're on a category page, show back button instead of browse all
     const catPage = !!window._gold_urlCategory;
     if(catPage){
-      const backBtn = el('button'); backBtn.className='btn browse-all'; backBtn.textContent = '← Back to Home'; backBtn.setAttribute('type','button');
+      const backBtn = el('button'); backBtn.className='btn browse-all uiverse-btn'; backBtn.dataset.label = 'Back to Home'; backBtn.innerHTML = '↲ Back to Home'; backBtn.setAttribute('type','button'); backBtn.style.fontSize='16px';
       backBtn.addEventListener('click',(ev)=>{ ev.preventDefault(); delete window._gold_urlCategory; history.pushState({}, '', window.location.pathname); renderCatalog(); window.scrollTo({top:0,behavior:'smooth'}); });
       rightWrap.appendChild(backBtn);
     } else {
-      const browse = el('button'); browse.className='btn browse-all'; browse.textContent = 'Browse all'; browse.setAttribute('type','button');
-      browse.addEventListener('click',(ev)=>{ ev.preventDefault(); const s = new URLSearchParams(window.location.search); s.set('category', cat.category); s.delete('page'); history.pushState({}, '', '?' + s.toString()); window._gold_urlCategory = cat.category; renderCatalog(); window.scrollTo({top:0,behavior:'smooth'}); });
+      const browse = el('button'); browse.className='btn browse-all uiverse-btn'; browse.dataset.label = 'Browse all'; browse.textContent = 'Browse all'; browse.setAttribute('type','button');
+      browse.addEventListener('click',(ev)=>{ ev.preventDefault(); openCategoryView(cat.category); });
       rightWrap.appendChild(browse);
     }
     header.appendChild(rightWrap);
@@ -1000,7 +1063,7 @@ async function renderCatalog(){
         price.innerHTML = pHtml; card.appendChild(price);
         const variantState = createVariantPopupUI(card, it);
         const actions = el('div'); actions.className='card-actions stacked'; actions.style.marginTop='8px';
-        const row1 = el('div'); row1.className = 'row'; const add = el('button','btn add-to-cart'); add.setAttribute('type','button'); add.dataset.id = it.id; add.title = 'Own this piece'; add.textContent='Own This Piece'; add.addEventListener('click',(ev)=>{ ev.stopPropagation(); try{ add.dataset.handled='1'; }catch(e){} const chosen = (variantState && variantState.chosen) ? variantState.chosen : getDefaultVariant(it); addToCart(Object.assign({},it,{chosen, qty:1})); setTimeout(()=>{ try{ delete add.dataset.handled }catch(e){} },400); }); row1.appendChild(add); actions.appendChild(row1);
+        const row1 = el('div'); row1.className = 'row'; const add = el('button','btn add-to-cart uiverse-btn'); add.setAttribute('type','button'); add.dataset.id = it.id; add.dataset.label = 'Own This Piece'; add.title = 'Own this piece'; add.textContent='Own This Piece'; add.addEventListener('click',(ev)=>{ ev.stopPropagation(); try{ add.dataset.handled='1'; }catch(e){} const chosen = (variantState && variantState.chosen) ? variantState.chosen : getDefaultVariant(it); addToCart(Object.assign({},it,{chosen, qty:1})); setTimeout(()=>{ try{ delete add.dataset.handled }catch(e){} },400); }); row1.appendChild(add); actions.appendChild(row1);
         const row2 = el('div'); row2.className='row'; const hbt = el('button','fav-btn'); hbt.setAttribute('type','button'); hbt.innerHTML = '<img src="' + iconPath + 'black-heart.png" alt="Favorites">'; hbt.addEventListener('click',(ev)=>{ ev.stopPropagation(); toggleWishlist(it); renderFavorites(); }); row2.appendChild(hbt); actions.appendChild(row2); card.appendChild(actions);
         grid.appendChild(card);
       });
@@ -1009,18 +1072,16 @@ async function renderCatalog(){
       if(totalPages>1) block.appendChild(makeNav());
 
     } else {
-      // Row scroller: 2-column grid with horizontal scroll
-      const prow = el('div','product-row'); 
-      const track = el('div','row-track'); 
+      // Row scroller: Swiper-based horizontal product scroll with 3D effect, momentum, and velocity
+      const prow = el('div','product-row swiper'); 
+      const track = el('div','row-track swiper-wrapper'); 
       prow.appendChild(track);
       
       if(cat.items && cat.items.length>0) cat.items.sort((a,b)=>(''+(a.title||'')).localeCompare((''+(b.title||'')), undefined, { sensitivity: 'base' }));
       
-      // Calculate container width for scrolling: each column needs space for 2 items
-      const colWidth = Math.floor((window.innerWidth - 40) / 2);
-      
-      // Add all items to track
+      // Add all items to track with swiper-slide wrapper
       cat.items.forEach(it=>{
+        const slide = el('div','swiper-slide');
         const card = el('div','product-card'); card.style.position='relative';
         const decorDiv = el('div','card-decor'); card.appendChild(decorDiv);
         const img = el('img'); img.src = it.img || 'mini.png'; img.alt = it.title || ''; img.loading='lazy'; img.decoding='async'; img.setAttribute('importance','low'); img.style.cursor='pointer'; img.addEventListener('click', ()=>{ try{ showImageLightbox((it.img||'mini.png'), it); }catch(e){} }); card.appendChild(img);
@@ -1031,10 +1092,11 @@ async function renderCatalog(){
         const price = el('p','price'); const mainPrice = (it.variants && it.variants[0] && it.variants[0].price) ? it.variants[0].price : (it.price || 0); price.textContent = `${mainPrice} EGP`; card.appendChild(price);
         const variantState = createVariantPopupUI(card, it);
         const actions = el('div'); actions.className='card-actions stacked'; actions.style.marginTop='8px';
-        const row1 = el('div'); row1.className = 'row'; const addBtn = el('button','btn add-to-cart'); addBtn.setAttribute('type','button'); addBtn.dataset.id = it.id; addBtn.setAttribute('aria-label','Own this piece'); addBtn.title = 'Own this piece'; addBtn.textContent='Own This Piece'; addBtn.addEventListener('click', (ev)=>{ ev.stopPropagation(); try{ addBtn.dataset.handled='1'; }catch(e){} const chosen = (variantState && variantState.chosen) ? variantState.chosen : getDefaultVariant(it); addToCart(Object.assign({}, it, { chosen, qty:1 })); setTimeout(()=>{ try{ delete addBtn.dataset.handled }catch(e){} },400); }); row1.appendChild(addBtn); actions.appendChild(row1);
+        const row1 = el('div'); row1.className = 'row'; const addBtn = el('button','btn add-to-cart uiverse-btn'); addBtn.setAttribute('type','button'); addBtn.dataset.id = it.id; addBtn.dataset.label = 'Own This Piece'; addBtn.setAttribute('aria-label','Own this piece'); addBtn.title = 'Own this piece'; addBtn.textContent='Own This Piece'; addBtn.addEventListener('click', (ev)=>{ ev.stopPropagation(); try{ addBtn.dataset.handled='1'; }catch(e){} const chosen = (variantState && variantState.chosen) ? variantState.chosen : getDefaultVariant(it); addToCart(Object.assign({}, it, { chosen, qty:1 })); setTimeout(()=>{ try{ delete addBtn.dataset.handled }catch(e){} },400); }); row1.appendChild(addBtn); actions.appendChild(row1);
         const row2 = el('div'); row2.className = 'row'; const heartBtn = el('button','fav-btn'); heartBtn.innerHTML='<img src="' + iconPath + 'black-heart.png" alt="Favorites">'; heartBtn.setAttribute('type','button'); heartBtn.setAttribute('aria-label','Add to favorites'); const isFav = (WISHLIST.findIndex(w=>w.id === it.id) >= 0); if(isFav) heartBtn.classList.add('active'); heartBtn.title = isFav ? 'Remove from favorites' : 'Add to favorites'; heartBtn.addEventListener('click', (ev)=>{ ev.stopPropagation(); const added = toggleWishlist(it); heartBtn.classList.toggle('active', added); heartBtn.title = added ? 'Remove from favorites' : 'Add to favorites'; renderFavorites(); }); row2.appendChild(heartBtn); actions.appendChild(row2);
         card.appendChild(actions);
-        track.appendChild(card);
+        slide.appendChild(card);
+        track.appendChild(slide);
       });
       
       const navWrap = el('div','row-nav'); const left = el('button'); left.className='nav-btn'; left.innerHTML=`<img src="${iconPath}left-arrow.png" alt="Scroll left">`; const right = el('button'); right.className='nav-btn'; right.innerHTML=`<img src="${iconPath}right-arrow.png" alt="Scroll right">`; navWrap.appendChild(left); navWrap.appendChild(right); prow.appendChild(navWrap);
@@ -1042,96 +1104,94 @@ async function renderCatalog(){
       const progress = el('div','row-progress'); const progressBar = el('div','row-progress-bar'); progress.appendChild(progressBar); prow.appendChild(progress);
       // subtle left/right edge indicators for touch affordance
       const leftEdge = el('div','row-edge row-edge-left'); leftEdge.innerHTML = `<img src="${iconPath}left-arrow.png" alt="Scroll left">`; const rightEdge = el('div','row-edge row-edge-right'); rightEdge.innerHTML = `<img src="${iconPath}right-arrow.png" alt="Scroll right">`; prow.appendChild(leftEdge); prow.appendChild(rightEdge);
-      // update row state (progress and indicators)
-      let _rowThrottle = null; function updateRowState(){ if(_rowThrottle) clearTimeout(_rowThrottle); _rowThrottle = setTimeout(()=>{ const max = track.scrollWidth - track.clientWidth; const pos = track.scrollLeft; const pct = (max>0) ? Math.max(0, Math.min(1, pos / max)) : 0; progressBar.style.width = (pct * 100) + '%'; leftEdge.style.opacity = pct > 0.02 ? '1' : '0'; rightEdge.style.opacity = pct < 0.98 ? '1' : '0'; left.style.opacity = pct > 0.02 ? '1' : '0.4'; left.style.pointerEvents = pct > 0.02 ? 'auto' : 'none'; right.style.opacity = pct < 0.98 ? '1' : '0.4'; right.style.pointerEvents = pct < 0.98 ? 'auto' : 'none'; },30); }
-      // Enable scrolling for all browsers
-      track.style.overflowX = 'auto'; track.style.webkitOverflowScrolling = 'touch'; track.style.touchAction = 'pan-y pinch-zoom';
-      // pointer drag + light momentum
-      // Keep natural vertical scroll working even when the gesture starts on a card
-      let isPointerDown=false, dragStarted=false, startX=0, startY=0, startScroll=0, lastMoveTime=0, lastMoveX=0, velocity=0; 
-      track.addEventListener('pointerdown',(e)=>{ 
-        isPointerDown=true; dragStarted=false; startX = e.clientX; startY = e.clientY; startScroll = track.scrollLeft; lastMoveTime = Date.now(); lastMoveX = startX; track.classList.remove('dragging'); 
-      }); 
-      track.addEventListener('pointermove',(e)=>{ 
-        if(!isPointerDown) return; 
-        const dx = e.clientX - startX; 
-        const dy = e.clientY - startY;
-        
-        // If the gesture is mostly vertical, hand control back to the page immediately
-        if(!dragStarted && Math.abs(dy) > Math.abs(dx) * 1.1){
-          isPointerDown = false;
-          dragStarted = false;
-          track.classList.remove('dragging');
+      
+      // Use native horizontal scrolling on touch devices because it is more reliable on real phones.
+      // Keep Swiper only for desktop-style pointer environments.
+      setTimeout(()=>{
+        const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0 || window.innerWidth <= 768;
+        const slides = prow.querySelectorAll('.swiper-slide');
+
+        const updateSlideWidth = () => {
+          const vw = window.innerWidth;
+          let minWidthCalc;
+
+          if (vw <= 420) {
+            minWidthCalc = 'calc((100% - 16px) / 1.55)';
+          } else if (vw <= 640) {
+            minWidthCalc = 'calc((100% - 20px) / 2)';
+          } else if (vw <= 768) {
+            minWidthCalc = 'calc((100% - 30px) / 3)';
+          } else if (vw <= 1024) {
+            minWidthCalc = 'calc((100% - 36px) / 3.5)';
+          } else {
+            minWidthCalc = 'calc((100% - 48px) / 5)';
+          }
+
+          slides.forEach(slide => {
+            slide.style.width = 'auto';
+            slide.style.flex = '0 0 auto';
+            slide.style.minWidth = minWidthCalc;
+          });
+        };
+
+        const updateProgress = () => {
+          const max = Math.max(0, track.scrollWidth - track.clientWidth);
+          const pct = max > 0 ? Math.max(0, Math.min(1, track.scrollLeft / max)) : 0;
+          progressBar.style.width = (pct * 100) + '%';
+          leftEdge.style.opacity = pct > 0.02 ? '1' : '0';
+          rightEdge.style.opacity = pct < 0.98 ? '1' : '0';
+          left.style.opacity = pct > 0.02 ? '1' : '0.4';
+          left.style.pointerEvents = pct > 0.02 ? 'auto' : 'none';
+          right.style.opacity = pct < 0.98 ? '1' : '0.4';
+          right.style.pointerEvents = pct < 0.98 ? 'auto' : 'none';
+        };
+
+        updateSlideWidth();
+
+        if (isTouchDevice || typeof Swiper === 'undefined') {
+          track.style.scrollSnapType = 'x proximity';
+          track.style.touchAction = 'pan-x pan-y pinch-zoom';
+          slides.forEach(slide => { slide.style.scrollSnapAlign = 'start'; });
+          track.addEventListener('scroll', updateProgress, { passive: true });
+          left.addEventListener('click', ()=>{ track.scrollBy({ left: -Math.max(220, track.clientWidth * 0.72), behavior: 'smooth' }); });
+          right.addEventListener('click', ()=>{ track.scrollBy({ left: Math.max(220, track.clientWidth * 0.72), behavior: 'smooth' }); });
+          setTimeout(updateProgress, 50);
+          window.addEventListener('resize', ()=>{ updateSlideWidth(); updateProgress(); }, { passive: true });
           return;
         }
 
-        if(!dragStarted){
-          if(Math.abs(dx) <= 8) return;
-          dragStarted = true;
-          track.classList.add('dragging');
-          try{ if(track.setPointerCapture) track.setPointerCapture(e.pointerId); }catch(err){}
+        if(typeof Swiper === 'undefined') {
+          console.warn('Swiper not loaded yet, retrying...');
+          return;
         }
-        e.preventDefault(); 
-        track.scrollLeft = startScroll - dx; 
-        const now = Date.now(); velocity = (lastMoveX - e.clientX) / (now - lastMoveTime + 1); lastMoveTime = now; lastMoveX = e.clientX; updateRowState(); 
-      }); 
-      const endDrag = (e)=>{ 
-        if(!isPointerDown) return; isPointerDown=false; 
-        if(dragStarted){ e.preventDefault(); dragStarted=false; } 
-        track.classList.remove('dragging'); 
-        // Reduced momentum for better snap behavior (quick settle)
-        function applyMomentum(){ 
-          if(Math.abs(velocity) > 0.3){ 
-            track.scrollLeft += velocity * 12; 
-            velocity *= 0.85; // faster deceleration for snap
-            updateRowState(); 
-            requestAnimationFrame(applyMomentum); 
-          } else { 
-            velocity = 0; 
-          } 
-        } 
-        requestAnimationFrame(applyMomentum); 
-      }; 
-      track.addEventListener('pointerup', endDrag); 
-      track.addEventListener('pointercancel', endDrag); 
-      track.addEventListener('pointerleave', endDrag);
-      track.addEventListener('wheel',(e)=>{
-        const max = track.scrollWidth - track.clientWidth;
-        if(max <= 0) return;
-        if(Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
-        const next = Math.max(0, Math.min(max, track.scrollLeft + e.deltaX));
-        if(next === track.scrollLeft) return;
-        e.preventDefault();
-        track.scrollLeft = next;
-        updateRowState();
-      }, { passive:false });
-      track.addEventListener('scroll', (e)=>{ updateRowState(); }, false);
-      // nav buttons - scroll by exactly 2 cards width (snap to show 2 full cards)
-      const getCardWidth = ()=> {
-        const card = track.querySelector('.product-card');
-        if(!card) return window.innerWidth * 0.45;
-        const style = window.getComputedStyle(card);
-        const width = card.offsetWidth;
-        const marginRight = parseFloat(style.marginRight) || 0;
-        const gap = 12; // gap from CSS
-        return width + gap;
-      };
-      left.addEventListener('click', (e)=>{ 
-        e.preventDefault();
-        e.stopPropagation();
-        const cardWidth = getCardWidth();
-        track.scrollLeft -= cardWidth * 2; // scroll exactly 2 cards
-        setTimeout(updateRowState, 50); 
-      }); 
-      right.addEventListener('click', (e)=>{ 
-        e.preventDefault();
-        e.stopPropagation();
-        const cardWidth = getCardWidth();
-        track.scrollLeft += cardWidth * 2; // scroll exactly 2 cards
-        setTimeout(updateRowState, 50); 
-      });
-      // initial state
-      setTimeout(updateRowState,120);
+
+        const swiper = new Swiper(prow, {
+          slidesPerView: 'auto',
+          spaceBetween: 12,
+          freeMode: true,
+          freeModeSticky: false,
+          freeModeVelocity: 1,
+          freeModeVelocityRatio: 0.5,
+          freeModeVelocityDecay: 0.95,
+          touchEventsTarget: 'wrapper',
+          resistanceRatio: 0.85,
+          speed: 400,
+          loop: false,
+          preloadImages: false,
+          lazy: { enabled: true, loadPrevNext: false },
+          on: {
+            init: () => { updateProgress(); },
+            slideChange: ()=>{ updateProgress(); }
+          }
+        });
+
+        left.addEventListener('click', ()=>{ swiper.slidePrev(); });
+        right.addEventListener('click', ()=>{ swiper.slideNext(); });
+
+        setTimeout(()=>{ updateProgress(); }, 50);
+        window.addEventListener('resize', ()=>{ updateSlideWidth(); swiper.update(); updateProgress(); }, { passive: true });
+      }, 100);
+      
       block.appendChild(prow);
     }
 
@@ -1188,7 +1248,7 @@ function renderCarousel(){
           // advance left every 4s
           pos = (pos + 1) % len;
           track.style.transform = `translateX(-${pos * 100}%)`;
-        },4000);
+        },5000);
       }
     }
     startAuto(featured.length);
@@ -1337,11 +1397,12 @@ function renderCarousel3D(){
     activeData = featured[activeIndex];
     const imgSrc = normalizeImage(activeData);
     mediaFrame.classList.add('carousel-editorial-flip');
+    // keep flip animation duration aligned with CSS (updated to .7s)
     setTimeout(()=>{
       image.src = imgSrc || '';
       image.alt = activeData && activeData.title ? activeData.title : 'featured';
       mediaFrame.classList.remove('carousel-editorial-flip');
-    }, 300);
+    }, 700);
     title.textContent = activeData && activeData.title ? activeData.title : 'Featured selection';
     desc.textContent = activeData && activeData.desc ? activeData.desc : 'A calm, polished display with a softer visual rhythm.';
     indexLabel.textContent = `${String(activeIndex + 1).padStart(2, '0')} / ${String(featured.length).padStart(2, '0')}`;
@@ -1357,7 +1418,7 @@ function renderCarousel3D(){
   const startAuto = ()=>{
     if(window._goldCarouselInterval){ clearInterval(window._goldCarouselInterval); window._goldCarouselInterval = null; }
     if(featured.length > 1){
-      window._goldCarouselInterval = setInterval(()=> setActive(activeIndex + 1), 5200);
+      window._goldCarouselInterval = setInterval(()=> setActive(activeIndex + 1), 4000);
     }
   };
 
@@ -1435,15 +1496,16 @@ function openProductModal(product){
     const frameDiv = el('div'); frameDiv.style.marginTop = '8px'; frameDiv.style.fontSize = '13px'; frameDiv.style.color = '#888'; frameDiv.style.fontStyle = 'italic'; frameDiv.textContent = frameText; pv.appendChild(frameDiv);
   }
 
-  // add download watermarked button (creates a composed image with a large centered logo and triggers download)
+  // add download button (creates a composed image with a small centered logo and triggers download)
   // ensure we don't duplicate the button
   if(!$('pm_download')){
-    const dl = document.createElement('button'); dl.id = 'pm_download'; dl.className = 'admin-btn'; dl.textContent = 'Download watermarked'; dl.style.marginLeft = '8px'; dl.addEventListener('click', async ()=>{
+    const dl = document.createElement('button'); dl.id = 'pm_download'; dl.className = 'admin-btn'; dl.textContent = 'Download'; dl.style.marginLeft = '8px'; dl.addEventListener('click', async ()=>{
       const curSrc = main.src || product.img || 'mini.png';
       try{
-        const bigData = await composeImageWithLogo(curSrc, (window.location.pathname.includes('/pages/') ? '../' : './') + 'logo.png', 'large', 'center');
-        const a = el('a'); a.href = bigData; a.download = `${product.title.replace(/[^a-z0-9]+/ig,'-').toLowerCase()}.jpg`; a.click(); showToast('Download started');
-      }catch(e){ console.error('Download watermark failed',e); showToast('Could not create watermarked image'); }
+        const logoPath = (window.location.pathname.includes('/pages/') ? '../' : './') + 'logo.png';
+        const bigData = await composeImageWithLogo(curSrc, logoPath, 'small', 'center');
+        const a = el('a'); a.href = bigData; a.download = `${product.title.replace(/[^a-z0-9]+/ig,'-').toLowerCase()}_watermarked.jpg`; a.click(); showToast('Image downloaded with watermark');
+      }catch(e){ console.error('Download failed',e); showToast('Download failed - trying direct image'); const a = el('a'); a.href = curSrc; a.download = `${product.title.replace(/[^a-z0-9]+/ig,'-').toLowerCase()}.jpg`; a.click(); }
     });
     const actionsContainer = document.querySelector('#pm_add').parentElement;
     actionsContainer.appendChild(dl);
@@ -1506,7 +1568,7 @@ function saveWishlist(){ localStorage.setItem('gold_wishlist', JSON.stringify(WI
 function toggleWishlist(item){ // ensure we store a snapshot
   const snap = (typeof item === 'string') ? (findItemById(item) ? snapshotItem(findItemById(item)) : { id: item, title: item, img: 'mini.png' }) : snapshotItem(item);
   const idx = WISHLIST.findIndex(i=>i.id===snap.id);
-  let added=false; if(idx>=0){ WISHLIST.splice(idx,1); added=false; } else { WISHLIST.push(snap); added=true; } saveWishlist(); if(added){ showToast('Added to favorites ♥'); trackMetaEvent('AddToWishlist', { content_ids: [snap.id], content_name: snap.title || snap.id, content_type: 'product' }); } else { showToast('Removed from favorites'); } return added; }
+  let added=false; if(idx>=0){ WISHLIST.splice(idx,1); added=false; } else { WISHLIST.push(snap); added=true; } saveWishlist(); if(added){ showToast('Added to favorites', 2500, 'heart'); trackMetaEvent('AddToWishlist', { content_ids: [snap.id], content_name: snap.title || snap.id, content_type: 'product' }); } else { showToast('Removed from favorites'); } return added; }
 function renderFavorites(){ const root = $('favList'); if(!root) return; root.innerHTML=''; if(WISHLIST.length===0){ root.textContent='No favorites yet'; return }
   const grid = el('div','products'); // reuse product-card styles
   WISHLIST.forEach(it=>{
@@ -1515,7 +1577,7 @@ function renderFavorites(){ const root = $('favList'); if(!root) return; root.in
     const title = el('h4'); title.textContent = it.title || ''; card.appendChild(title);
     const meta = el('div'); meta.className = 'variant-note'; meta.textContent = (it.size? it.size : (it.variants && it.variants[0] ? it.variants[0].size : '')); card.appendChild(meta);
     const price = el('p'); price.className = 'price'; price.textContent = `EGP ${ (it.price|| (it.variants && it.variants[0] && it.variants[0].price) || 0) }`; card.appendChild(price);
-    const actions = el('div'); actions.style.display='flex'; actions.style.gap='8px'; actions.style.marginTop='8px'; const add = el('button'); add.className='btn'; add.dataset.id = it.id; add.title = 'Own this piece'; add.textContent='Own This Piece'; add.addEventListener('click',()=>{ try{ add.dataset.handled='1'; }catch(e){} addToCart(it); setTimeout(()=>{ try{ delete add.dataset.handled }catch(e){} },400); }); const rem = el('button'); rem.className='btn'; rem.textContent='Remove'; rem.addEventListener('click',()=>{ WISHLIST = WISHLIST.filter(w=>w.id!==it.id); saveWishlist(); renderFavorites(); }); actions.appendChild(add); actions.appendChild(rem); card.appendChild(actions); grid.appendChild(card);
+    const actions = el('div'); actions.style.display='flex'; actions.style.gap='8px'; actions.style.marginTop='8px'; const add = el('button'); add.className='btn add-to-cart uiverse-btn'; add.dataset.id = it.id; add.dataset.label = 'Own This Piece'; add.title = 'Own this piece'; add.textContent='Own This Piece'; add.addEventListener('click',()=>{ try{ add.dataset.handled='1'; }catch(e){} addToCart(it); setTimeout(()=>{ try{ delete add.dataset.handled }catch(e){} },400); }); const rem = el('button'); rem.className='btn'; rem.textContent='Remove'; rem.addEventListener('click',()=>{ WISHLIST = WISHLIST.filter(w=>w.id!==it.id); saveWishlist(); renderFavorites(); }); actions.appendChild(add); actions.appendChild(rem); card.appendChild(actions); grid.appendChild(card);
   });
   root.appendChild(grid);
 }
@@ -1566,9 +1628,9 @@ async function addToCart(item){
   showToast('Added to cart');
   trackMetaEvent('AddToCart', { content_ids: [entry.id], content_name: entry.title || entry.id, content_type: 'product', value: Number(entry.price||0) * Number(entry.qty||1), currency: 'EGP' });
 }
-function showToast(msg, duration=2500){
+function showToast(msg, duration=2500, iconName=''){
   const t = el('div'); t.className='toast'; t.style.opacity='1'; t.style.transition='opacity .25s ease';
-  const txt = el('div'); txt.className='toast-body'; txt.textContent = msg;
+  const txt = el('div'); txt.className='toast-body'; txt.innerHTML = `${iconName ? svgIcon(iconName, '') + ' ' : ''}${replaceEmojiGlyphs(escapeHtml(msg))}`;
   const close = el('button'); close.className='toast-close'; close.type='button'; close.innerHTML='&times;';
   let timer = null;
   const remove = ()=>{ if(timer) clearTimeout(timer); t.style.opacity=0; setTimeout(()=>{ try{ t.remove(); }catch(e){} },280); };
@@ -1585,8 +1647,19 @@ function openDrawer(){ const d=$('sideDrawer'); const b=$('menuBtn'); if(d){ d.c
   setTimeout(()=>{ try{ const si = d.querySelector('#searchInput'); if(si) si.focus(); }catch(e){} },120);
   // ensure drawer user display is up-to-date
   try{ applyDrawerUserDisplay(); }catch(e){};
+  // add a subtle backdrop for a premium feel
+  try{
+    let bd = document.getElementById('sideDrawerBackdrop');
+    if(!bd){ bd = document.createElement('div'); bd.id = 'sideDrawerBackdrop'; bd.className = 'side-drawer-backdrop'; document.body.appendChild(bd);
+      bd.addEventListener('click', ()=>{ try{ closeDrawer(); }catch(e){} });
+    }
+    // show it
+    requestAnimationFrame(()=> bd.classList.add('visible'));
+  }catch(_e){}
  } else { const tn = document.querySelector('.topnav'); if(tn){ tn.classList.add('open-mobile'); if(b){ b.classList.add('open'); b.setAttribute('aria-expanded','true'); } } } }
-function closeDrawer(){ const d=$('sideDrawer'); const b=$('menuBtn'); if(d){ d.classList.add('hidden'); d.classList.remove('open'); if(b){ b.classList.remove('open'); b.setAttribute('aria-expanded','false'); } } else { const tn = document.querySelector('.topnav'); if(tn){ tn.classList.remove('open-mobile'); if(b){ b.classList.remove('open'); b.setAttribute('aria-expanded','false'); } } } }
+function closeDrawer(){ const d=$('sideDrawer'); const b=$('menuBtn'); if(d){ d.classList.add('hidden'); d.classList.remove('open'); if(b){ b.classList.remove('open'); b.setAttribute('aria-expanded','false'); } // hide backdrop if present
+    try{ const bd = document.getElementById('sideDrawerBackdrop'); if(bd){ bd.classList.remove('visible'); bd.addEventListener('transitionend', ()=>{ try{ bd.remove(); }catch(e){} }, { once:true }); } }catch(_e){}
+  } else { const tn = document.querySelector('.topnav'); if(tn){ tn.classList.remove('open-mobile'); if(b){ b.classList.remove('open'); b.setAttribute('aria-expanded','false'); } } } }
 
 function searchCatalog(q){ const suggestions = []; const qlow = (q||'').toLowerCase(); const qnorm = qlow.replace(/[×xX]/g,'x').replace(/\s+/g,' ').trim(); const tokens = qnorm.split(' ').filter(Boolean);
   if(!Array.isArray(CATALOG) || CATALOG.length===0){ try{ const parsed = JSON.parse(localStorage.getItem('gold_products')||'[]'); if(Array.isArray(parsed) && parsed.length>0){ CATALOG = parsed; } }catch(e){} }
@@ -1653,14 +1726,14 @@ async function liveSearch(q){
   if(!q || q.length===0) return;
   // If still no catalog, show a helpful message and WA contact
   if(!Array.isArray(CATALOG) || CATALOG.length===0){ ul.classList.add('show'); const li=el('li'); li.className='no-result'; li.innerHTML = `<div class='note'>😕 Catalog is not loaded. Please try reloading the page or contact us on WhatsApp and we'll help you find it.</div>`;
-    const btn = el('a'); btn.className='wa-btn'; btn.textContent='Contact us on WhatsApp'; btn.href = 'https://wa.me/201004135874?text=مرحبا%20GoldrArt%20👋%0A%0Aساعدني%20اوجد%20منتجات%20تطابق:%20' + encodeURIComponent(q); btn.target='_blank'; btn.rel='noopener noreferrer'; btn.style.display='inline-block'; btn.style.textDecoration='none'; btn.style.textAlign='center';
+    const btn = el('a'); btn.className='wa-btn'; btn.textContent='Contact us on WhatsApp'; btn.href = 'https://wa.me/201004135874?text=مرحبا%20GoldrArt%0A%0Aساعدني%20اوجد%20منتجات%20تطابق:%20' + encodeURIComponent(q); btn.target='_blank'; btn.rel='noopener noreferrer'; btn.style.display='inline-block'; btn.style.textDecoration='none'; btn.style.textAlign='center';
     li.appendChild(btn); ul.appendChild(li); return }
 
   const suggestions = searchCatalog(q);
   console.debug('liveSearch', q, '=>', suggestions.length, 'matches');
 
-  if(suggestions.length===0){ ul.classList.add('show'); const li=el('li'); li.className='no-result'; li.innerHTML = `<div class='note' style='display:flex;flex-direction:column;gap:8px'><div>😔 <strong>Product not found.</strong></div><div style='color:#bbb;font-size:13px'>We can design a custom piece in the size or style you want. Contact us on WhatsApp and we'll help you.</div></div>`;
-    const btn = el('a'); btn.className='wa-btn'; btn.textContent='Contact via WhatsApp to Order'; btn.href = 'https://wa.me/201004135874?text=مرحبا%20GoldrArt%20👋%0A%0Aلم%20اجد%20المنتج:%20' + encodeURIComponent(q) + '%0A%0Aهل%20يمكنكم%20تصميم%20قطعة%20مخصصة%20لي؟'; btn.target='_blank'; btn.rel='noopener noreferrer'; btn.style.display='inline-block'; btn.style.textDecoration='none'; btn.style.textAlign='center';
+  if(suggestions.length===0){ ul.classList.add('show'); const li=el('li'); li.className='no-result'; li.innerHTML = `<div class='note' style='display:flex;flex-direction:column;gap:8px'><div style='display:flex;align-items:center;gap:8px'>${svgIcon('danger','Alert')}<strong>Product not found.</strong></div><div style='color:#bbb;font-size:13px'>We can design a custom piece in the size or style you want. Contact us on WhatsApp and we'll help you.</div></div>`;
+    const btn = el('a'); btn.className='wa-btn'; btn.textContent='Contact via WhatsApp to Order'; btn.href = 'https://wa.me/201004135874?text=مرحبا%20GoldrArt%0A%0Aلم%20اجد%20المنتج:%20' + encodeURIComponent(q) + '%0A%0Aهل%20يمكنكم%20تصميم%20قطعة%20مخصصة%20لي؟'; btn.target='_blank'; btn.rel='noopener noreferrer'; btn.style.display='inline-block'; btn.style.textDecoration='none'; btn.style.textAlign='center';
     const small = el('div'); small.style.fontSize='13px'; small.style.color='#bbb'; small.style.marginTop='6px'; small.innerHTML = `<em style='font-size:12px;color:#bbb'>We'll help you find or create the perfect piece</em>`;
     li.appendChild(btn); li.appendChild(small); ul.appendChild(li); return }
   ul.classList.add('show'); suggestions.slice(0,8).forEach(s=>{ const it = s.item; const li = el('li'); li.tabIndex = 0; li.setAttribute('role','option');
@@ -1714,7 +1787,7 @@ function renderCart(){
   CART.forEach((it,idx)=>{
     const row = el('div','cart-item list-row');
     const thumb = el('img'); thumb.src = it.img||'mini.png'; thumb.className='thumb';
-    const info = el('div'); info.className='info'; info.innerHTML = `<div class='title'><span class='gold-star small'>✦</span>${it.title}</div><div style='color:#bbb;font-size:13px'>${it.size||''}</div>`;
+    const info = el('div'); info.className='info'; info.innerHTML = `<div class='title'>${svgIcon('stark','Star')}${escapeHtml(it.title)}</div><div style='color:#bbb;font-size:13px'>${escapeHtml(it.size||'')}</div>`;
     const qty = el('div','qty');
     const minus = el('button'); minus.textContent='-';
     const plus = el('button'); plus.textContent='+';
@@ -1965,7 +2038,7 @@ document.addEventListener('DOMContentLoaded',async ()=>{
     // add small close to center-notif
     document.querySelectorAll('.center-notif').forEach(cn=>{
       if(cn.querySelector('.close-small')) return;
-      const s = document.createElement('button'); s.className='close-small'; s.textContent='✕'; s.addEventListener('click', ()=> cn.remove()); cn.appendChild(s);
+      const s = document.createElement('button'); s.className='close-small'; s.innerHTML = svgIcon('close','Close'); s.addEventListener('click', ()=> cn.remove()); cn.appendChild(s);
     });
   }catch(e){}
 
@@ -2033,7 +2106,7 @@ document.addEventListener('DOMContentLoaded',async ()=>{
       let btn = document.getElementById('backToTop');
       if(!btn){
         btn = document.createElement('button');
-        btn.id='backToTop'; btn.className='back-top'; btn.setAttribute('aria-label','Go to top'); btn.textContent='▲';
+        btn.id='backToTop'; btn.className='back-top'; btn.setAttribute('aria-label','Go to top'); btn.innerHTML = svgIcon('arrow-up','Up');
         document.body.appendChild(btn);
       }
       const showWhen = 220;
@@ -2151,9 +2224,9 @@ document.addEventListener('DOMContentLoaded',async ()=>{
       else { $('adminMsg').textContent = 'Incorrect password'; }
     }catch(e){ console.error(e); $('adminMsg').textContent = 'Login failed'; }
   });
-  if($('adminClose')) $('adminClose').addEventListener('click',()=>{ const ap = $('adminPanel'); ap.classList.add('hidden'); ap.classList.remove('fullscreen'); try{ document.body.style.overflow = ''; const main = document.querySelector('main, .container'); if(main) main.removeAttribute('aria-hidden'); detachAdminKeyHandlers(); }catch(e){} renderCatalog(); renderCarousel();});
+  if($('adminClose')) $('adminClose').addEventListener('click',()=>{ const ap = $('adminPanel'); ap.classList.add('hidden'); ap.classList.remove('fullscreen'); try{ document.body.style.overflow = ''; const main = document.querySelector('main, .container'); if(main) main.removeAttribute('aria-hidden'); detachAdminKeyHandlers(); }catch(e){} renderCatalog(); renderCarousel3D();});
   // top-bar close + reload handlers
-  if($('adminCloseTop')) $('adminCloseTop').addEventListener('click',()=>{ const ap = $('adminPanel'); ap.classList.add('hidden'); ap.classList.remove('fullscreen'); try{ document.body.style.overflow = ''; const main = document.querySelector('main, .container'); if(main) main.removeAttribute('aria-hidden'); detachAdminKeyHandlers(); }catch(e){} renderCatalog(); renderCarousel(); });
+  if($('adminCloseTop')) $('adminCloseTop').addEventListener('click',()=>{ const ap = $('adminPanel'); ap.classList.add('hidden'); ap.classList.remove('fullscreen'); try{ document.body.style.overflow = ''; const main = document.querySelector('main, .container'); if(main) main.removeAttribute('aria-hidden'); detachAdminKeyHandlers(); }catch(e){} renderCatalog(); renderCarousel3D(); });
   if($('adminReload')) $('adminReload').addEventListener('click', async ()=>{ try{ await loadCatalogFromCSV(); renderCatalog(); showToast('Catalog reloaded'); }catch(e){ showToast('Reload failed: '+ (e.message||e)); console.error(e); } });
   // Normalize product references (id -> title/img) across localStorage (one-step)
   async function normalizeProductRefs(){
@@ -2504,7 +2577,7 @@ async function loadAndApplyBackground(){
   if($('favBtn')) $('favBtn').addEventListener('click',()=>{ renderFavorites(); $('favoritesModal').classList.remove('hidden'); });
   if($('closeFav')) $('closeFav').addEventListener('click',()=>{$('favoritesModal').classList.add('hidden');});
   // coupon apply
-  if($('applyCoupon')) $('applyCoupon').addEventListener('click',()=>{ const code = $('couponInput').value.trim(); if(code){ applyCouponCode(code); } else { $('couponMsg').textContent='❌ Please enter a coupon code'; $('couponMsg').style.color='#f88'; } });
+  if($('applyCoupon')) $('applyCoupon').addEventListener('click',()=>{ const code = $('couponInput').value.trim(); if(code){ applyCouponCode(code); } else { $('couponMsg').innerHTML = `${svgIcon('close','Error')} Please enter a coupon code`; $('couponMsg').style.color='#f88'; } });
   // admin: manage coupons and notifications
   if($('manageCoupons')) $('manageCoupons').addEventListener('click',()=>{ openManageCoupons(); });
   if($('manageNotifs')) $('manageNotifs').addEventListener('click',()=>{ openManageNotifs(); });
@@ -2540,14 +2613,14 @@ function sendToAndroid(title, message) {
     // Method 1: Try AndroidNotif interface (if set up in app)
     if (typeof AndroidNotif !== 'undefined' && AndroidNotif && typeof AndroidNotif.send === 'function') {
       AndroidNotif.send(title || 'إشعار', message || '');
-      console.log('✅ Notification sent to Android (Interface):', title, message);
+      console.log('[OK] Notification sent to Android (Interface):', title, message);
       return true;
     }
     
     // Method 2: Title Hack (fallback - works without any setup!)
     const originalTitle = document.title;
     document.title = '[NOTIF]' + (title || 'إشعار') + ' - ' + (message || '');
-    console.log('📱 Notification sent to Android (Title Hack):', document.title);
+    console.log('[INFO] Notification sent to Android (Title Hack):', document.title);
     
     // Restore original title after 1.5 seconds
     setTimeout(() => {
@@ -2556,7 +2629,7 @@ function sendToAndroid(title, message) {
     
     return true;
   } catch(e) {
-    console.warn('⚠️ Failed to send Android notification:', e);
+    console.warn('[WARN] Failed to send Android notification:', e);
     return false;
   }
 }
@@ -2569,10 +2642,10 @@ function showNotification(msg, duration=4, center=false, link=null, btnText=null
   
   // Show on web as usual
   const n = el('div'); if(center){ n.className = 'center-notif'; // structured content
-    if(msg && msg.title){ const t = el('div'); t.className='title'; t.textContent = msg.title; n.appendChild(t); }
-    const m = el('div'); m.className='msg'; m.innerHTML = (msg && msg.body) ? msg.body : (typeof msg==='string'?msg:JSON.stringify(msg)); n.appendChild(m);
+    if(msg && msg.title){ const t = el('div'); t.className='title'; t.innerHTML = replaceEmojiGlyphs(escapeHtml(msg.title)); n.appendChild(t); }
+    const m = el('div'); m.className='msg'; m.innerHTML = replaceEmojiGlyphs((msg && msg.body) ? msg.body : (typeof msg==='string'?msg:JSON.stringify(msg))); n.appendChild(m);
     if(link && btnText){ const row = el('div'); row.className='row'; const a = el('a'); a.className='cta'; a.href = link; a.target='_blank'; a.rel='noopener'; a.textContent = btnText; a.addEventListener('click',(e)=>{ e.stopPropagation(); }); row.appendChild(a); n.appendChild(row); }
-    const closeBtn = el('button'); closeBtn.className='close-small'; closeBtn.innerHTML='✕'; closeBtn.addEventListener('click',(e)=>{ e.stopPropagation(); n.remove(); }); n.appendChild(closeBtn);
+    const closeBtn = el('button'); closeBtn.className='close-small'; closeBtn.innerHTML = svgIcon('close','Close'); closeBtn.addEventListener('click',(e)=>{ e.stopPropagation(); n.remove(); }); n.appendChild(closeBtn);
     n.addEventListener('click',()=>{ n.remove(); }); document.body.appendChild(n);
     setTimeout(()=>{ try{ n.style.transition='opacity .4s transform .3s'; n.style.opacity=0; n.style.transform = 'translate(-50%,-54%) scale(.98)'; setTimeout(()=>n.remove(),400); }catch(e){} }, (duration||4)*1000);
   } else {
@@ -2861,14 +2934,8 @@ function renderDynamicCategories(){
       link.href = '/?category=' + encodeURIComponent(catName); 
       link.textContent = catName; 
       link.addEventListener('click', (e)=>{ 
-        e.preventDefault(); 
-        const s = new URLSearchParams(); 
-        s.set('category', catName); 
-        history.pushState({}, '', '?' + s.toString()); 
-        window._gold_urlCategory = catName; 
-        renderCatalog(); 
-        closeDrawer(); 
-        window.scrollTo({top:0,behavior:'smooth'}); 
+        e.preventDefault();
+        openCategoryView(catName);
       }); 
       container.appendChild(link); 
     }); 
@@ -2891,7 +2958,7 @@ function openManagePages(){ const modal = el('div','modal'); modal.style.display
 
 function loadInspiration(){ try{ return JSON.parse(localStorage.getItem('gold_inspiration')||'[]'); }catch(e){ return []; } }
 function saveInspiration(arr){ localStorage.setItem('gold_inspiration', JSON.stringify(arr)); }
-function renderInspirationList(){ const root = document.getElementById('inspirationList'); if(!root) return; const arr = loadInspiration(); root.innerHTML=''; if(arr.length===0){ root.textContent='No posts yet. Add them from Admin → Manage Inspiration'; return; } arr.forEach(p=>{ const r = el('div'); r.style.padding='12px'; r.style.border='1px solid rgba(255,255,255,0.03)'; r.style.marginBottom='10px'; r.innerHTML = `<h3 style='margin:0;color:${GOLD}'>${p.title}</h3><div style='color:#bbb;margin-top:6px'>${p.excerpt||''}</div><div style='margin-top:8px'><a href='${p.url||"#"}' target='_blank' style='color:#fff;opacity:0.9'>${p.url? 'Link / Read':'No link'}</a></div>`; root.appendChild(r); }); }
+function renderInspirationList(){ const root = document.getElementById('inspirationList'); if(!root) return; const arr = loadInspiration(); root.innerHTML=''; if(arr.length===0){ root.textContent='No posts yet. Add them from Admin / Manage Inspiration'; return; } arr.forEach(p=>{ const r = el('div'); r.style.padding='12px'; r.style.border='1px solid rgba(255,255,255,0.03)'; r.style.marginBottom='10px'; r.innerHTML = `<h3 style='margin:0;color:${GOLD}'>${replaceEmojiGlyphs(escapeHtml(p.title))}</h3><div style='color:#bbb;margin-top:6px'>${replaceEmojiGlyphs(escapeHtml(p.excerpt||''))}</div><div style='margin-top:8px'><a href='${p.url||"#"}' target='_blank' style='color:#fff;opacity:0.9'>${p.url? 'Link / Read':'No link'}</a></div>`; root.appendChild(r); }); }
 
 function openManageInspiration(){ const modal = el('div','modal'); modal.style.display='flex'; modal.style.alignItems='center'; modal.style.justifyContent='center'; const panel = el('div'); panel.className='modal-panel'; panel.style.maxWidth='820px'; panel.innerHTML = `<h3>Manage Inspiration posts</h3><div style='margin-bottom:8px;color:#bbb'>Create, edit or delete inspiration posts shown on Inspiration page.</div>`; const list = el('div'); list.style.maxHeight='60vh'; list.style.overflow='auto'; const form = el('div'); form.innerHTML = `<input id='ip_title' placeholder='Title'><input id='ip_excerpt' placeholder='Short excerpt'><input id='ip_url' placeholder='Optional external URL'><textarea id='ip_content' placeholder='Full content (HTML allowed)' style='min-height:120px'></textarea><div style='display:flex;gap:8px;margin-top:8px'><button id='ip_save' class='gold'>Save</button><button id='ip_close'>Close</button></div>`; panel.appendChild(form); panel.appendChild(list); modal.appendChild(panel); document.body.appendChild(modal);
   function renderList(){ list.innerHTML=''; const arr = loadInspiration(); if(arr.length===0) list.textContent='No posts'; arr.forEach((p,idx)=>{ const r = el('div'); r.style.display='flex'; r.style.justifyContent='space-between'; r.style.alignItems='center'; r.style.padding='8px 0'; r.innerHTML = `<div style='flex:1'><strong>${p.title}</strong><div style='color:#bbb;font-size:13px'>${p.excerpt}</div></div>`; const edit = el('button'); edit.textContent='Edit'; edit.addEventListener('click',()=>{ openEdit(idx); }); const del = el('button'); del.textContent='Delete'; del.addEventListener('click',()=>{ const a = loadInspiration(); a.splice(idx,1); saveInspiration(a); renderList(); renderInspirationList(); }); r.appendChild(edit); r.appendChild(del); list.appendChild(r); }); }
@@ -2906,7 +2973,7 @@ function attachAdminKeyHandlers(){ if(_adminKeydownHandler) return; _adminKeydow
     if(e.key === 'Escape'){
       const ap = $('adminPanel'); if(ap && !ap.classList.contains('hidden')){
         ap.classList.add('hidden'); ap.classList.remove('fullscreen'); try{ document.body.style.overflow = ''; const main = document.querySelector('main, .container'); if(main) main.removeAttribute('aria-hidden'); }catch(err){}
-        renderCatalog(); renderCarousel(); detachAdminKeyHandlers();
+        renderCatalog(); renderCarousel3D(); detachAdminKeyHandlers();
       }
     }
     // Focus trap
@@ -2934,7 +3001,7 @@ function renderAdminProducts(root){ // render product list into provided root
       // left: thumbnail + title/desc
       const left = el('div'); left.style.display='flex'; left.style.alignItems='center'; left.style.flex='1';
       const thumb = el('img'); thumb.src = (it.img || 'mini.png'); thumb.alt = it.title || ''; thumb.style.width='88px'; thumb.style.height='64px'; thumb.style.objectFit='cover'; thumb.style.borderRadius='6px'; thumb.style.marginRight='12px'; left.appendChild(thumb);
-      const info = el('div'); info.style.flex='1'; info.innerHTML = `<div style='display:flex;align-items:center;gap:8px'><span class='gold-star small'>✦</span><strong class='title'>${it.title}</strong></div><div style='color:#bbb;font-size:13px;margin-top:6px'>${(it.desc||'').slice(0,160)}</div>`; left.appendChild(info);
+      const info = el('div'); info.style.flex='1'; info.innerHTML = `<div style='display:flex;align-items:center;gap:8px'>${svgIcon('stark','Star')}<strong class='title'>${escapeHtml(it.title)}</strong></div><div style='color:#bbb;font-size:13px;margin-top:6px'>${escapeHtml((it.desc||'').slice(0,160))}</div>`; left.appendChild(info);
       row.appendChild(left);
       // actions (right side)
       const actionsWrap = el('div'); actionsWrap.style.display='flex'; actionsWrap.style.gap='8px';
@@ -2997,7 +3064,7 @@ function buildAdminMain(){
     }
   }); root.appendChild(openSheetBtn);
 
-  const persistBtn = el('button','admin-btn'); persistBtn.id = 'persistAppliedBtn'; persistBtn.textContent = 'Save applied → products.applied.json'; persistBtn.title = 'Download currently applied catalog'; persistBtn.addEventListener('click',()=>{ persistAppliedToFile(); }); root.appendChild(persistBtn);
+  const persistBtn = el('button','admin-btn'); persistBtn.id = 'persistAppliedBtn'; persistBtn.textContent = 'Save applied to products.applied.json'; persistBtn.title = 'Download currently applied catalog'; persistBtn.addEventListener('click',()=>{ persistAppliedToFile(); }); root.appendChild(persistBtn);
   const bakeRepoBtn = el('button','admin-btn'); bakeRepoBtn.id = 'bakeRepoBtn'; bakeRepoBtn.textContent = 'Bake & commit (owner helper)'; bakeRepoBtn.title = 'Download baked file and follow instructions to commit locally using the tools script'; bakeRepoBtn.addEventListener('click',()=>{ openBakeToRepoInstructions(); }); root.appendChild(bakeRepoBtn);
   const editSocial = el('button','admin-btn'); editSocial.textContent = 'Edit Social Links'; editSocial.addEventListener('click',()=>{ openEditSocialLinks(); }); root.appendChild(editSocial);
   const searchTestBtn = el('button','admin-btn'); searchTestBtn.textContent = 'Run Search Tests'; searchTestBtn.title = 'Run automated search checks and show summary'; searchTestBtn.addEventListener('click', async ()=>{ const res = runSearchTests(); const m = el('div','modal-panel'); m.innerHTML = `<h3>Search Test Results</h3><div style='max-height:420px;overflow:auto'><pre style='white-space:pre-wrap;color:#ddd;font-size:13px'>${JSON.stringify(res,null,2)}</pre></div><div style='display:flex;gap:8px;margin-top:12px'><button id='st_close' class='gold'>Close</button></div>`; document.body.appendChild(m); addModalClose(m.querySelector('div'),m); m.querySelector('#st_close').addEventListener('click',()=>m.remove()); }); root.appendChild(searchTestBtn);
@@ -3127,16 +3194,16 @@ function openFeaturedManager(){ const items = loadFeatured(); const m = el('div'
     let thumb = it.img || (it.items && it.items.length>0 && findItemById(it.items[0]) ? findItemById(it.items[0]).img : null) || 'mini.png';
     if(thumb && !thumb.startsWith('http') && !thumb.startsWith('data:') && !thumb.startsWith('/')){ const base = window.location.pathname.includes('/pages/') ? '../' : './'; thumb = base + thumb; }
     row.innerHTML = `<img src='${thumb}' style='width:84px;height:56px;object-fit:cover;border-radius:6px'><input class='feat-title' value='${(it.title||'')}' style='flex:1;padding:6px;border-radius:6px;border:0;background:#222;color:#ddd'><input class='feat-overlay-text' placeholder='Overlay text' value='${(it.overlay && it.overlay.text)||''}' style='width:160px;padding:6px;border-radius:6px;border:0;background:#222;color:#ddd;margin-left:6px'><select class='feat-overlay-size'><option value='small'>Small</option><option value='medium'>Medium</option><option value='large'>Large</option></select><select class='feat-overlay-pos'><option value='center'>Center</option><option value='bottom-left'>Bottom left</option><option value='bottom-right'>Bottom right</option></select><label style="margin-left:8px"><input type='checkbox' class='feat-logo-toggle' ${it.overlay && it.overlay.logo ? 'checked' : ''}> Logo</label><select class='feat-logo-size'><option value='small'>Small</option><option value='medium'>Medium</option><option value='large'>Large</option></select><select class='feat-logo-pos'><option value='bottom-right'>Bottom right</option><option value='bottom-left'>Bottom left</option><option value='top-right'>Top right</option><option value='top-left'>Top left</option><option value='center'>Center</option></select><input class='feat-link' placeholder='Link (https://...)' value='${it.link||''}' style='width:200px;margin-left:6px'><div style='display:flex;flex-direction:column;gap:6px'><button class='up' ${idx===0? 'disabled':''}>↑</button><button class='down' ${idx===cur.length-1? 'disabled':''}>↓</button><button class='rem'>Remove</button></div>`; list.appendChild(row);
-    row.querySelector('.rem').addEventListener('click',()=>{ cur.splice(idx,1); saveFeatured(cur); refresh(); renderCarousel(); });
-    row.querySelector('.up').addEventListener('click',()=>{ if(idx>0){ const a=cur[idx-1]; cur[idx-1]=cur[idx]; cur[idx]=a; saveFeatured(cur); refresh(); renderCarousel(); } });
-    row.querySelector('.down').addEventListener('click',()=>{ if(idx<cur.length-1){ const a=cur[idx+1]; cur[idx+1]=cur[idx]; cur[idx]=a; saveFeatured(cur); refresh(); renderCarousel(); } });
-    const titleInput = row.querySelector('.feat-title'); titleInput.addEventListener('change',()=>{ cur[idx].title = titleInput.value; saveFeatured(cur); renderCarousel(); });
-    const overInp = row.querySelector('.feat-overlay-text'); overInp.addEventListener('change',()=>{ cur[idx].overlay = cur[idx].overlay || {}; cur[idx].overlay.text = overInp.value; saveFeatured(cur); renderCarousel(); });
+    row.querySelector('.rem').addEventListener('click',()=>{ cur.splice(idx,1); saveFeatured(cur); refresh(); renderCarousel3D(); });
+    row.querySelector('.up').addEventListener('click',()=>{ if(idx>0){ const a=cur[idx-1]; cur[idx-1]=cur[idx]; cur[idx]=a; saveFeatured(cur); refresh(); renderCarousel3D(); } });
+    row.querySelector('.down').addEventListener('click',()=>{ if(idx<cur.length-1){ const a=cur[idx+1]; cur[idx+1]=cur[idx]; cur[idx]=a; saveFeatured(cur); refresh(); renderCarousel3D(); } });
+    const titleInput = row.querySelector('.feat-title'); titleInput.addEventListener('change',()=>{ cur[idx].title = titleInput.value; saveFeatured(cur); renderCarousel3D(); });
+    const overInp = row.querySelector('.feat-overlay-text'); overInp.addEventListener('change',()=>{ cur[idx].overlay = cur[idx].overlay || {}; cur[idx].overlay.text = overInp.value; saveFeatured(cur); renderCarousel3D(); });
   }); }
   // populate product select
   const sel = p.querySelector('#featProductSelect'); CATALOG.forEach(cat=>cat.items.forEach(it=>{ const opt = el('option'); opt.value = it.id; opt.textContent = `${it.title} (${cat.category})`; sel.appendChild(opt); }));
   sel.addEventListener('change',()=>{ const pid = sel.value; if(!pid) return; // find product
-    let prod=null; CATALOG.forEach(cat=>cat.items.forEach(it=>{ if(it.id===pid) prod=it; })); if(prod){ const cur=loadFeatured(); cur.push({id:'p-'+prod.id,title:prod.title,img:prod.img||'mini.png', overlay:{text:'',size:'medium',pos:'center'}}); saveFeatured(cur); refresh(); renderCarousel(); sel.value=''; }
+    let prod=null; CATALOG.forEach(cat=>cat.items.forEach(it=>{ if(it.id===pid) prod=it; })); if(prod){ const cur=loadFeatured(); cur.push({id:'p-'+prod.id,title:prod.title,img:prod.img||'mini.png', overlay:{text:'',size:'medium',pos:'center'}}); saveFeatured(cur); refresh(); renderCarousel3D(); sel.value=''; }
   });
 
   // New Group Slide - select multiple products to form a single featured slide
@@ -3144,7 +3211,7 @@ function openFeaturedManager(){ const items = loadFeatured(); const m = el('div'
   function openFeatGroupCreator(){ const gm = el('div','modal'); const gp = el('div'); gp.className='modal-panel'; gp.style.maxWidth='720px'; gp.innerHTML = `<h3>Create Group Slide</h3><div style='max-height:60vh;overflow:auto' id='groupProdList'></div><input id='groupTitle' placeholder='Group title (optional)' style='width:100%;margin-top:8px'><div style='display:flex;gap:8px;justify-content:flex-end;margin-top:10px'><button id='groupCreate' class='gold'>Create</button><button id='groupCancel' class='admin-btn'>Cancel</button></div>`; gm.appendChild(gp); document.body.appendChild(gm); addModalClose(gp,gm);
     const list = gp.querySelector('#groupProdList'); list.innerHTML=''; CATALOG.forEach(cat=>{ const h = el('div'); h.innerHTML = `<strong style='color:${GOLD}'>${cat.category}</strong>`; list.appendChild(h); cat.items.forEach(it=>{ const r = el('div'); r.style.display='flex'; r.style.alignItems='center'; r.style.gap='8px'; r.style.padding='6px 0'; r.innerHTML = `<input type='checkbox' value='${it.id}' id='g_${it.id}'><label for='g_${it.id}'>${it.title} — ${it.variants && it.variants[0]? it.variants[0].size : ''}</label>`; list.appendChild(r); }); });
     gp.querySelector('#groupCancel').addEventListener('click',()=>gm.remove());
-    gp.querySelector('#groupCreate').addEventListener('click',()=>{ const checked = Array.from(gp.querySelectorAll('input[type=checkbox]:checked')).map(i=>i.value); if(checked.length===0){ alert('Select at least one product'); return; } const title = gp.querySelector('#groupTitle').value.trim() || (checked.length>1? 'Group of ' + checked.length + ' products' : 'Group'); const cur = loadFeatured(); cur.push({type:'group', items: checked, title, overlay:{logo:true,logoSize:'small',logoPos:'top-right'}}); saveFeatured(cur); gm.remove(); refresh(); renderCarousel(); showToast('Group slide created'); }); }
+    gp.querySelector('#groupCreate').addEventListener('click',()=>{ const checked = Array.from(gp.querySelectorAll('input[type=checkbox]:checked')).map(i=>i.value); if(checked.length===0){ alert('Select at least one product'); return; } const title = gp.querySelector('#groupTitle').value.trim() || (checked.length>1? 'Group of ' + checked.length + ' products' : 'Group'); const cur = loadFeatured(); cur.push({type:'group', items: checked, title, overlay:{logo:true,logoSize:'small',logoPos:'top-right'}}); saveFeatured(cur); gm.remove(); refresh(); renderCarousel3D(); showToast('Group slide created'); }); }
 
 
   // upload image (preview -> confirm flow)
@@ -3159,8 +3226,8 @@ function openFeaturedManager(){ const items = loadFeatured(); const m = el('div'
   p.querySelector('#featLogoSize').addEventListener('change',(ev)=>{ logoOverlay.className = 'feat-logo-overlay '+ ev.target.value + ' ' + p.querySelector('#featLogoPos').value; });
   p.querySelector('#featLogoPos').addEventListener('change',(ev)=>{ logoOverlay.className = 'feat-logo-overlay ' + p.querySelector('#featLogoSize').value + ' ' + ev.target.value; });
   p.querySelector('#featCancelUpload').addEventListener('click',()=>{ pendingUpload=null; previewImg.src=''; confirmPanel.style.display='none'; p.querySelector('#featUploadTitle').value=''; p.querySelector('#featLinkImage').value=''; p.querySelector('#featDirectLink').value=''; });
-  p.querySelector('#featConfirmUpload').addEventListener('click', async ()=>{ if(!pendingUpload){ alert('No image to confirm'); return; } const title = p.querySelector('#featUploadTitle').value||pendingUpload.title || ''; const size = p.querySelector('#featUploadSize').value||'medium'; const pos = p.querySelector('#featUploadPos').value||'center'; const logoOn = !!p.querySelector('#featLogoToggle').checked; const logoSize = p.querySelector('#featLogoSize').value||'small'; const logoPos = p.querySelector('#featLogoPos').value||'bottom-right'; const linkImg = p.querySelector('#featLinkImage').value.trim() || null; const directLink = p.querySelector('#featDirectLink').value.trim() || null; const cur = loadFeatured(); let finalImg = pendingUpload.img; if(logoOn){ try{ finalImg = await composeImageWithLogo(pendingUpload.img, (window.location.pathname.includes('/pages/') ? '../' : './') + 'logo.png', logoSize, logoPos); }catch(e){ console.error('Logo overlay failed',e); showToast('Could not overlay logo, using original image'); finalImg = pendingUpload.img; } } const item = Object.assign({},pendingUpload,{title,img: linkImg || finalImg,overlay:{text:title,size,pos,logo:logoOn,logoSize,logoPos}, link: directLink || null}); cur.push(item); saveFeatured(cur); pendingUpload=null; previewImg.src=''; confirmPanel.style.display='none'; p.querySelector('#featUploadTitle').value=''; p.querySelector('#featLinkImage').value=''; p.querySelector('#featDirectLink').value=''; refresh(); renderCarousel(); showToast('Featured slide added'); });
-  p.querySelector('#featConfirmLink').addEventListener('click',()=>{ const link = p.querySelector('#featDirectLink').value.trim(); const linkImg = p.querySelector('#featLinkImage').value.trim(); if(!link) return showToast('Enter a link'); const cur = loadFeatured(); cur.push({id:'l'+Date.now(),title:link, img: linkImg || pendingUpload && pendingUpload.img || 'mini.png', overlay:{text:'',size:'medium',pos:'center'}, link}); saveFeatured(cur); pendingUpload=null; previewImg.src=''; confirmPanel.style.display='none'; p.querySelector('#featUploadTitle').value=''; p.querySelector('#featLinkImage').value=''; p.querySelector('#featDirectLink').value=''; refresh(); renderCarousel(); });
+  p.querySelector('#featConfirmUpload').addEventListener('click', async ()=>{ if(!pendingUpload){ alert('No image to confirm'); return; } const title = p.querySelector('#featUploadTitle').value||pendingUpload.title || ''; const size = p.querySelector('#featUploadSize').value||'medium'; const pos = p.querySelector('#featUploadPos').value||'center'; const logoOn = !!p.querySelector('#featLogoToggle').checked; const logoSize = p.querySelector('#featLogoSize').value||'small'; const logoPos = p.querySelector('#featLogoPos').value||'bottom-right'; const linkImg = p.querySelector('#featLinkImage').value.trim() || null; const directLink = p.querySelector('#featDirectLink').value.trim() || null; const cur = loadFeatured(); let finalImg = pendingUpload.img; if(logoOn){ try{ finalImg = await composeImageWithLogo(pendingUpload.img, (window.location.pathname.includes('/pages/') ? '../' : './') + 'logo.png', logoSize, logoPos); }catch(e){ console.error('Logo overlay failed',e); showToast('Could not overlay logo, using original image'); finalImg = pendingUpload.img; } } const item = Object.assign({},pendingUpload,{title,img: linkImg || finalImg,overlay:{text:title,size,pos,logo:logoOn,logoSize,logoPos}, link: directLink || null}); cur.push(item); saveFeatured(cur); pendingUpload=null; previewImg.src=''; confirmPanel.style.display='none'; p.querySelector('#featUploadTitle').value=''; p.querySelector('#featLinkImage').value=''; p.querySelector('#featDirectLink').value=''; refresh(); renderCarousel3D(); showToast('Featured slide added'); });
+  p.querySelector('#featConfirmLink').addEventListener('click',()=>{ const link = p.querySelector('#featDirectLink').value.trim(); const linkImg = p.querySelector('#featLinkImage').value.trim(); if(!link) return showToast('Enter a link'); const cur = loadFeatured(); cur.push({id:'l'+Date.now(),title:link, img: linkImg || pendingUpload && pendingUpload.img || 'mini.png', overlay:{text:'',size:'medium',pos:'center'}, link}); saveFeatured(cur); pendingUpload=null; previewImg.src=''; confirmPanel.style.display='none'; p.querySelector('#featUploadTitle').value=''; p.querySelector('#featLinkImage').value=''; p.querySelector('#featDirectLink').value=''; refresh(); renderCarousel3D(); });
   p.querySelector('#featClose').addEventListener('click',()=>{ m.remove(); });
   refresh(); }
 
